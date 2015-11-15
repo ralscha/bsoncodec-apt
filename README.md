@@ -141,32 +141,32 @@ The annotation processor only creates Codec implementation for classes that are 
 
 Attribute | Description
 --- | --- 
-codecProviderClassName | Fully qualified classname of the CodecProvider the processor should create. (Default: "PojoCodecProvider")
-storeNullValues | If false ignores fields that have a null value. If true creates a null entry in the BSON document. (Default: false)
-storeEmptyCollections | If false ignores collections that are empty. If true adds an empty array to the BSON document. (Default: false)
+codecProviderClassName | Fully qualified classname of the CodecProvider the processor should create. (Default: ```"PojoCodecProvider"```)
+storeNullValues | If false ignores fields that have a null value. If true creates a null entry in the BSON document. (Default: ```false```)
+storeEmptyCollections | If false ignores collections that are empty. If true adds an empty array to the BSON document. (Default: ```false```)
 
 
 #### @Field
 Overrides the custom field handling behavior. This is an optional annotation.
-All instance fields that have a corresponding get-/set method and are not annotated with @Transient 
+All instance fields that have a corresponding get-/set method and are not annotated with ```@Transient```
 are by default included in the final Codec code. 
 
 Attribute | Description
 --- | ---
 value | Name of the key in the BSON document. (Default: Name of the Java field)
-order | Order in which the entry should appear in the BSON document. (Default: In order they are listed in the Java class)
+order | Order in which the entry should appear in the BSON document. (Default: In order they are listed in the Java class, except the primary key field which is always ordered first)
 codec | A custom Codec implementation that should be used for this field, instead of the default code.
-collectionImplementationClass | For collections. A hint for the decode phase which Collection implementation should be instantiated
+collectionImplementationClass | For collections. A hint for the decode phase which Collection implementation should be instantiated.
 
 
 #### @Id
 Marks a field as the primary key of the document. This is an optional annotation. 
-The annotation processor by default tries to find the primary key by type (ObjectId or UUID) or by name ('id' or '_id').
+The annotation processor by default tries to find the primary key by type (```ObjectId``` or ```UUID```) or by name ('id' or '_id').
 
 Attribute | Description
 --- | ---
 generator | An implementation of the IdGenerator interface. For generating the primary key when no value is provided.
-conversion | For primary keys that use the type String in the POJO. Converts the String into an ObjectId or UUID (encode) and back to a String (decode) 
+conversion | For primary keys that use the type String in the POJO. Converts the String into an ObjectId or UUID (encode) and back to a String (decode). Possible values are ```BASE64_OBJECTID``` (Base 64 String to ObjectId, ```HEX_OBJECTID``` (Hex String to ObjectId) and ```HEX_UUID``` (Hex String to UUID).
 codec | A custom codec implementation. Overrides the default code and ignores the generator and conversion attribute.
 
 #### @Transient
