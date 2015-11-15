@@ -1,0 +1,26 @@
+sudo: false
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+script: 
+  - cd bsoncodec-apt
+  - ./mvnw clean install
+  - cd ../bsoncodec-test
+  - ./mvnw clean test
+  
+env:
+  global:
+  - SONATYPE_USERNAME=ralscha23
+  - secure: ukQLnGdQJbsnDoq0yUGDSjFXGn4EU17rBo9vZoz5XjemJ/G/LtXDeY2q78a1yxOKh1nkwpgwQS+nL+YdinxAJuSoag0SjC/Z4fb1l3Drq+8pcty9RjgPZ1PKn6E8SItv1HYgjQkUWOhQndUYyLACmHap4yMXLsL4xpx4nZPTtBXNNl6ijr6C27jTAD7ybsUKK4wzbCyPu+vWjOxUehqtGLBLaMJWTrp6S4Z3OpnybdegTdFKhJjhQk/Ma2vjNqmA+JLWgW7o4pR2FMZMwPZBaOM1TRmy2FZa5Afi0WXPSOeW1ruLGn+YWvzR6pM7Jy+V1kDmhOgktOphzWZ7XPAUoTu/g0CfXg4a4Xap4P3y90d+wFwK4prZNcam+gWgGX5c1EzAq7sUCIhsTb+veengrB5264TozG4xfRnU8FrO9dOMGrxaBInn5Dtpxv6slTFCv1cypLOvBTnFddbtYCAPsxWdD2bhJGbOkqvzqtkPzzCLxdJfvhPRMtpdfEhcZdoN4XSaplw1FO0YvEVUVMQzEzebiCMmzDcJ/DTg3YYOK3Qyx/F3AxP+wDr2eq0zQtEBOzT10G+R3lE3BkscKYUakZmb+p3iPlLwYPRpxxkmsCcMVYeOcwuUmmEZRTz6BOJGq2Rp65oWF+Sm92yUuhbZj9ZZqHyWp9pM4pOWHSseXYY=
+  
+after_success:
+  - python addsettings.py
+  - cd bsoncodec-apt
+  - mvn clean deploy -DskipTests=true --settings ~/.m2/mySettings.xml
+
+cache:
+  directories:
+  - $HOME/.m2
