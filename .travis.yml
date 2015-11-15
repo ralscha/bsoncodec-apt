@@ -7,8 +7,10 @@ jdk:
 
 script: 
   - cd bsoncodec-apt
+  - chmod 700 ./mvnw
   - ./mvnw clean install
   - cd ../bsoncodec-test
+  - chmod 700 ./mvnw
   - ./mvnw clean test
   
 env:
