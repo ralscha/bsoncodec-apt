@@ -51,15 +51,6 @@ public class CoreClassesDelegate implements CodeGeneratorDelegate {
 		else if (Util.isSameType(type, AtomicLong.class)) {
 			builder.addStatement("writer.writeInt64($L.longValue())", ctx.getter());
 		}
-		else if (Util.isSameType(type, Instant.class)) {
-			builder.addStatement("writer.writeInt64($L.toEpochMilli())", ctx.getter());
-		}
-		else if (Util.isSameType(type, Year.class)) {
-			builder.addStatement("writer.writeInt32($L.getValue())", ctx.getter());
-		}
-		else if (Util.isSameType(type, Month.class)) {
-			builder.addStatement("writer.writeInt32($L.getValue())", ctx.getter());
-		}
 
 	}
 
@@ -85,23 +76,12 @@ public class CoreClassesDelegate implements CodeGeneratorDelegate {
 			builder.addStatement(ctx.setter("new $T(reader.readInt64())"),
 					AtomicLong.class);
 		}
-		else if (Util.isSameType(type, Instant.class)) {
-			builder.addStatement(ctx.setter("$T.ofEpochMilli(reader.readInt64())"),
-					Instant.class);
-		}
-		else if (Util.isSameType(type, Year.class)) {
-			builder.addStatement(ctx.setter("$T.of(reader.readInt32())"), Year.class);
-		}
-		else if (Util.isSameType(type, Month.class)) {
-			builder.addStatement(ctx.setter("$T.of(reader.readInt32())"), Month.class);
-		}
 	}
 
 	@Override
 	public boolean accepts(TypeMirror type) {
 		return Util.isAnyType(type, String.class, Date.class, AtomicBoolean.class,
-				AtomicInteger.class, AtomicLong.class, Instant.class, Year.class,
-				Month.class);
+				AtomicInteger.class, AtomicLong.class);
 	}
 
 }
