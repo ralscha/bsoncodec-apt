@@ -82,12 +82,12 @@ public @interface Id {
 	 * <td>{@link IdConversion#BASE64_UUID }</td>
 	 * <td>Base64 String</td>
 	 * <td>{@link UUID}</td>
-	 * </tr> 
+	 * </tr>
 	 * <tr>
 	 * <td>{@link IdConversion#HEX_UUID }</td>
 	 * <td>Hex String</td>
 	 * <td>{@link UUID}</td>
-	 * </tr> 
+	 * </tr>
 	 * </table>
 	 */
 	IdConversion conversion() default IdConversion.NULL;

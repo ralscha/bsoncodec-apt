@@ -42,7 +42,7 @@ public class MapCodeGen extends CompoundCodeGen {
 
 	private TypeMirror implementationType;
 
-	private TypeMirror keyType;
+	private final TypeMirror keyType;
 
 	public MapCodeGen(CompoundCodeGen parent, TypeMirror type, TypeMirror keyType) {
 		super(parent, type);
@@ -85,15 +85,21 @@ public class MapCodeGen extends CompoundCodeGen {
 		TypeMirror childType = this.getChildCodeGen().getType();
 		builder.addStatement("writer.writeStartDocument()");
 
-		builder.beginControlFlow("for (Map.Entry<$T, $T> $L : $L.entrySet())", keyType,
-				childType, ctx.getLoopVar(), ctx.getter());
+		builder.beginControlFlow("for (Map.Entry<$T, $T> $L : $L.entrySet())",
+				this.keyType, childType, ctx.getLoopVar(), ctx.getter());
 
-		if (Util.isSameType(keyType, String.class)) {
+		if (Util.isSameType(this.keyType, String.class)) {
 			builder.addStatement("writer.writeName($L.getKey())", ctx.getLoopVar());
 		}
 		else {
-			builder.addStatement("writer.writeName($T.valueOf($L.getKey()))",
-					String.class, ctx.getLoopVar());
+			if (Util.isSameType(getType(), EnumMap.class)) {
+				builder.addStatement("writer.writeName($L.getKey().name())",
+						ctx.getLoopVar());
+			}
+			else {
+				builder.addStatement("writer.writeName($T.valueOf($L.getKey()))",
+						String.class, ctx.getLoopVar());
+			}
 		}
 
 		boolean permittNullElements = permitNullElements();
@@ -136,10 +142,9 @@ public class MapCodeGen extends CompoundCodeGen {
 		}
 
 		builder.addStatement("reader.readStartDocument()");
-		TypeMirror childType = this.getChildCodeGen().getType();
 		if (Util.isSameType(getType(), EnumMap.class)) {
-			builder.addStatement("$T $L = $T.noneOf($T.class)", getType(), lv,
-					EnumMap.class, childType);
+			builder.addStatement("$T $L = new $T<>($T.class)", getType(), lv,
+					EnumMap.class, this.keyType);
 		}
 		else {
 			builder.addStatement("$T $L = new $T<>()", getType(), lv,
@@ -150,12 +155,12 @@ public class MapCodeGen extends CompoundCodeGen {
 				"while ((bsonType = reader.readBsonType()) != $T.END_OF_DOCUMENT)",
 				BsonType.class);
 
-		if (Util.isSameType(keyType, String.class)) {
+		if (Util.isSameType(this.keyType, String.class)) {
 			builder.addStatement("String $LKey = reader.readName()", lv);
 		}
 		else {
-			builder.addStatement("$T $LKey = $T.valueOf(reader.readName())", keyType, lv,
-					keyType);
+			builder.addStatement("$T $LKey = $T.valueOf(reader.readName())", this.keyType,
+					lv, this.keyType);
 		}
 
 		boolean permittNullElements = permitNullElements();

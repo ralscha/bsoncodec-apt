@@ -45,7 +45,8 @@ public class PrimitiveDelegate implements CodeGeneratorDelegate {
 			builder.addStatement("writer.writeInt64($L)", ctx.getter());
 			break;
 		case CHAR:
-			builder.addStatement("writer.writeString(String.valueOf($L))", ctx.getter());
+			builder.addStatement("writer.writeString($T.valueOf($L))", String.class,
+					ctx.getter());
 			break;
 		case FLOAT:
 			builder.addStatement("writer.writeDouble($L)", ctx.getter());

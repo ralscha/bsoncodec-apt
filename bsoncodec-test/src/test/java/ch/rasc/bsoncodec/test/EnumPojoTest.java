@@ -18,6 +18,7 @@ package ch.rasc.bsoncodec.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,6 +79,12 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 		map.put("null", null);
 		pojo.setMap(map);
 
+		EnumMap<Day, Integer> enumMap = new EnumMap<>(Day.class);
+		enumMap.put(Day.MONDAY, 1);
+		enumMap.put(Day.FRIDAY, 5);
+		enumMap.put(Day.SATURDAY, 6);
+		pojo.setEnumMap(enumMap);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -110,6 +117,7 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getEnumSet2()).isNull();
 		assertThat(empty.getEnumSet3()).isNull();
 		assertThat(empty.getMap()).isNull();
+		assertThat(empty.getEnumMap()).isNull();
 	}
 
 	@Test
@@ -130,7 +138,7 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(9);
+		assertThat(doc).hasSize(10);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(Day.MONDAY.name());
 		assertThat((List<String>) doc.get("array")).containsExactly(Day.TUESDAY.name(),
@@ -152,6 +160,10 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 				MapEntry.entry("two", Day.TUESDAY.name()),
 				MapEntry.entry("three", Day.WEDNESDAY.name()),
 				MapEntry.entry("null", null));
+
+		assertThat((Map<String, Integer>) doc.get("enumMap")).containsOnly(
+				MapEntry.entry("MONDAY", 1), MapEntry.entry("FRIDAY", 5),
+				MapEntry.entry("SATURDAY", 6));
 	}
 
 	@Test
