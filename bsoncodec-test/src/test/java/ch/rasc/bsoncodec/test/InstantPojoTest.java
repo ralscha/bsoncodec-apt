@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.bson.Document;
+import org.bson.codecs.Codec;
 import org.bson.codecs.ObjectIdGenerator;
+import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
@@ -44,10 +46,22 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 
 	private final static String COLL_NAME = "Instants";
 
+	static class InstantCodecProvider implements CodecProvider {
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> Codec<T> get(final Class<T> clazz, final CodecRegistry registry) {
+			if (clazz.equals(InstantPojo.class)) {
+				return (Codec<T>) new InstantPojoCodec(registry, new ObjectIdGenerator());
+			}
+			return null;
+		}
+	}
+
 	private MongoDatabase connect() {
-		CodecRegistry codecRegistry = CodecRegistries
-				.fromRegistries(MongoClient.getDefaultCodecRegistry(), CodecRegistries
-						.fromCodecs(new InstantInt64Codec(), new InstantPojoCodec(new ObjectIdGenerator())));
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+				MongoClient.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(new InstantCodecProvider()),
+				CodecRegistries.fromCodecs(new InstantInt64Codec()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
 				.withCodecRegistry(codecRegistry);

@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.bson.Document;
+import org.bson.codecs.Codec;
 import org.bson.codecs.ObjectIdGenerator;
+import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
@@ -42,10 +44,22 @@ public class YearPojoTest extends AbstractMongoDBTest {
 
 	private final static String COLL_NAME = "years";
 
+	static class YearCodecProvider implements CodecProvider {
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> Codec<T> get(final Class<T> clazz, final CodecRegistry registry) {
+			if (clazz.equals(YearPojo.class)) {
+				return (Codec<T>) new YearPojoCodec(registry, new ObjectIdGenerator());
+			}
+			return null;
+		}
+	}
+
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
 				MongoClient.getDefaultCodecRegistry(),
-				CodecRegistries.fromCodecs(new YearInt32Codec(), new YearPojoCodec(new ObjectIdGenerator())));
+				CodecRegistries.fromProviders(new YearCodecProvider()),
+				CodecRegistries.fromCodecs(new YearInt32Codec()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
 				.withCodecRegistry(codecRegistry);
