@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.type.TypeKind;
@@ -41,6 +42,12 @@ public class Util {
 		TypeMirror collectionType = typeUtils.erasure(elementUtils
 				.getTypeElement(Collection.class.getCanonicalName()).asType());
 		return typeUtils.isAssignable(typeUtils.erasure(typeMirror), collectionType);
+	}
+
+	public static boolean isMap(TypeMirror typeMirror) {
+		TypeMirror mapType = typeUtils.erasure(
+				elementUtils.getTypeElement(Map.class.getCanonicalName()).asType());
+		return typeUtils.isAssignable(typeUtils.erasure(typeMirror), mapType);
 	}
 
 	public static boolean isSameType(TypeMirror typeMirror, Class<?> clazz) {

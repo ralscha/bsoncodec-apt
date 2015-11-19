@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.pojo;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -33,6 +34,7 @@ public class YearPojo {
 	private Year[][] array2;
 	private List<Year> list;
 	private Set<Year> set;
+	private Map<String, Year> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class YearPojo {
 
 	public void setSet(Set<Year> set) {
 		this.set = set;
+	}
+
+	public Map<String, Year> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<String, Year> map) {
+		this.map = map;
 	}
 
 }

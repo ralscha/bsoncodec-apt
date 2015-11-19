@@ -19,10 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Year;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.ObjectIdGenerator;
@@ -78,6 +81,14 @@ public class YearPojoTest extends AbstractMongoDBTest {
 		Set<Year> set = new HashSet<>();
 		set.add(Year.of(2012));
 		pojo.setSet(set);
+
+		Map<String, Year> map = new HashMap<>();
+		map.put("one", Year.of(2011));
+		map.put("two", Year.of(2012));
+		map.put("three", Year.of(2013));
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -104,6 +115,7 @@ public class YearPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -124,7 +136,7 @@ public class YearPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(6);
+		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(2001);
 		assertThat((List<Integer>) doc.get("array")).containsExactly(2002, 2003, 2004);
@@ -132,6 +144,11 @@ public class YearPojoTest extends AbstractMongoDBTest {
 				.containsExactly(Arrays.asList(2005), Arrays.asList(2006, 2007));
 		assertThat((List<Integer>) doc.get("list")).containsExactly(2008, 2009);
 		assertThat((List<Integer>) doc.get("set")).containsExactly(2012);
+		assertThat((Map<String, Integer>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", 2011),
+				MapEntry.entry("two", 2012),
+				MapEntry.entry("three", 2013),
+				MapEntry.entry("null", null));
 	}
 
 	@Test

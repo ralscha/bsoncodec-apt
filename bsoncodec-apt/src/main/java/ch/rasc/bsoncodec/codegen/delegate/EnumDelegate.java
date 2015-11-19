@@ -15,6 +15,9 @@
  */
 package ch.rasc.bsoncodec.codegen.delegate;
 
+import java.time.DayOfWeek;
+import java.time.Month;
+
 import javax.lang.model.type.TypeMirror;
 
 import ch.rasc.bsoncodec.Util;
@@ -34,7 +37,8 @@ public class EnumDelegate implements CodeGeneratorDelegate {
 
 	@Override
 	public boolean accepts(TypeMirror type) {
-		return Util.isEnum(type);
+		return Util.isEnum(type) && !Util.isSameType(type, Month.class)
+				&& !Util.isSameType(type, DayOfWeek.class);
 	}
 
 }

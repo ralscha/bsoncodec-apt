@@ -56,13 +56,19 @@ import ch.rasc.bsoncodec.test.pojo.StringPojo;
 import ch.rasc.bsoncodec.test.pojo.StringPojoCodec;
 import ch.rasc.bsoncodec.test.pojo.YearPojo;
 import ch.rasc.bsoncodec.test.pojo.YearPojoCodec;
+import ch.rasc.bsoncodec.time.InstantInt64Codec;
+import ch.rasc.bsoncodec.time.MonthInt32Codec;
+import ch.rasc.bsoncodec.time.YearInt32Codec;
 
 public class CodecProviderTest {
 
 	@Test
 	public void testContainsAllCodecs() {
 		PojoCodecProvider provider = new PojoCodecProvider();
-		CodecRegistry codecRegistry = CodecRegistries.fromProviders(provider);
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
+				CodecRegistries.fromProviders(provider),
+				CodecRegistries.fromCodecs(new YearInt32Codec(), new MonthInt32Codec(),
+						new InstantInt64Codec()));
 
 		assertThat(provider.get(BytePojo.class, codecRegistry))
 				.isInstanceOf(BytePojoCodec.class);

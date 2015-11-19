@@ -79,6 +79,7 @@ import ch.rasc.bsoncodec.codegen.CompoundCodeGen;
 import ch.rasc.bsoncodec.codegen.ConversionObjectIdCodeGen;
 import ch.rasc.bsoncodec.codegen.ConversionUUIDCodeGen;
 import ch.rasc.bsoncodec.codegen.CustomIdCodecCodeGen;
+import ch.rasc.bsoncodec.codegen.MapCodeGen;
 import ch.rasc.bsoncodec.codegen.ScalarCodeGen;
 import ch.rasc.bsoncodec.codegen.delegate.ByteArrayDelegate;
 import ch.rasc.bsoncodec.codegen.delegate.CustomCodecDelegate;
@@ -510,6 +511,18 @@ public class CodecCodeGenerator {
 								new UnknownCodecDelegate());
 					}
 					return cg;
+				}
+				else if (Util.isMap(declaredType)) {
+					List<? extends TypeMirror> typeArguments = declaredType
+							.getTypeArguments();
+
+					if (typeArguments.size() == 2) {
+						MapCodeGen cg = new MapCodeGen(parent, declaredType,
+								typeArguments.get(0));
+						collectCodeGen(typeArguments.get(1), cg);
+						return cg;
+					}
+
 				}
 				return ScalarCodeGen.create(parent, declaredType);
 			}

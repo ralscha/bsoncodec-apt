@@ -15,36 +15,18 @@
  */
 package ch.rasc.bsoncodec.codegen;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Deque;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Queue;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.TransferQueue;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.bson.BsonType;
@@ -56,12 +38,15 @@ import com.squareup.javapoet.TypeName;
 import ch.rasc.bsoncodec.Util;
 import ch.rasc.bsoncodec.model.FieldModel;
 
-public class CollectionCodeGen extends CompoundCodeGen {
+public class MapCodeGen extends CompoundCodeGen {
 
 	private TypeMirror implementationType;
 
-	public CollectionCodeGen(CompoundCodeGen parent, TypeMirror type) {
+	private TypeMirror keyType;
+
+	public MapCodeGen(CompoundCodeGen parent, TypeMirror type, TypeMirror keyType) {
 		super(parent, type);
+		this.keyType = keyType;
 	}
 
 	public void setImplementationType(TypeMirror implementationType) {
@@ -70,9 +55,9 @@ public class CollectionCodeGen extends CompoundCodeGen {
 
 	protected TypeName getImplementationType() {
 		if (this.implementationType == null) {
-			Class<?> impl = getDefaultImplementation();
-			if (impl != null) {
-				return ClassName.get(impl);
+			if (((DeclaredType) getType()).asElement()
+					.getKind() == ElementKind.INTERFACE) {
+				return ClassName.get(LinkedHashMap.class);
 			}
 			return ClassName.get((TypeElement) Util.typeUtils.asElement(this.getType()));
 		}
@@ -98,25 +83,32 @@ public class CollectionCodeGen extends CompoundCodeGen {
 		}
 
 		TypeMirror childType = this.getChildCodeGen().getType();
-		builder.addStatement("writer.writeStartArray()").beginControlFlow(
-				"for ($T $L : $L)", childType, ctx.getLoopVar(), ctx.getter());
+		builder.addStatement("writer.writeStartDocument()");
+
+		builder.beginControlFlow("for (Map.Entry<$T, $T> $L : $L.entrySet())", keyType,
+				childType, ctx.getLoopVar(), ctx.getter());
+
+		String loopVar = String.valueOf(ctx.getLoopVar());
+		if (!Util.isSameType(keyType, String.class)) {
+			loopVar += ".toString()";
+		}
+		builder.addStatement("writer.writeName($L.getKey())", loopVar);
 
 		boolean permittNullElements = permitNullElements();
 		if (!field.disableEncodeNullCheck() && permittNullElements) {
-			builder.beginControlFlow("if ($L != null)", ctx.getLoopVar());
+			builder.beginControlFlow("if ($L != null)", ctx.getLoopVar() + ".getValue()");
 		}
 
 		this.getChildCodeGen().addEncodeStatements(
-				ctx.createEncodeChildContext(String.valueOf(ctx.getLoopVar())));
+				ctx.createEncodeChildContext(ctx.getLoopVar() + ".getValue()"));
 
 		if (!field.disableEncodeNullCheck() && permittNullElements) {
-			if (field.storeNullValue()) {
-				builder.nextControlFlow("else").addStatement("writer.writeNull()");
-			}
+			builder.nextControlFlow("else").addStatement("writer.writeNull()");
 			builder.endControlFlow();
 		}
 
-		builder.endControlFlow().addStatement("writer.writeEndArray()");
+		builder.endControlFlow();
+		builder.addStatement("writer.writeEndDocument()");
 
 		if (!field.storeEmptyCollection()) {
 			builder.endControlFlow();
@@ -137,18 +129,15 @@ public class CollectionCodeGen extends CompoundCodeGen {
 		Builder builder = ctx.builder();
 		char lv = ctx.getLoopVar();
 
-		CodeGeneratorContext childCtx = ctx.createDecodeChildContext(lv + ".add(%s)");
-
 		if (!field.disableDecodeNullCheck() && !hasParent()) {
 			builder.beginControlFlow("if (bsonType != $T.NULL)", BsonType.class);
 		}
 
-		builder.addStatement("reader.readStartArray()");
-
+		builder.addStatement("reader.readStartDocument()");
 		TypeMirror childType = this.getChildCodeGen().getType();
-		if (Util.isSameType(getType(), EnumSet.class)) {
+		if (Util.isSameType(getType(), EnumMap.class)) {
 			builder.addStatement("$T $L = $T.noneOf($T.class)", getType(), lv,
-					EnumSet.class, childType);
+					EnumMap.class, childType);
 		}
 		else {
 			builder.addStatement("$T $L = new $T<>()", getType(), lv,
@@ -158,21 +147,25 @@ public class CollectionCodeGen extends CompoundCodeGen {
 		builder.beginControlFlow(
 				"while ((bsonType = reader.readBsonType()) != $T.END_OF_DOCUMENT)",
 				BsonType.class);
+		builder.addStatement("String $LKey = reader.readName()", lv);
 
-		boolean permittNullElements = permitNullElements();		
+		boolean permittNullElements = permitNullElements();
 		if (permittNullElements) {
 			builder.beginControlFlow("if (bsonType != $T.NULL)", BsonType.class);
 		}
 
+		CodeGeneratorContext childCtx = ctx
+				.createDecodeChildContext(lv + ".put(" + lv + "Key, %s)");
 		this.getChildCodeGen().addDecodeStatements(childCtx);
 
 		if (permittNullElements) {
 			builder.nextControlFlow("else").addStatement("reader.readNull()");
-			builder.addStatement(lv + ".add(null)");
+			builder.addStatement("$L.put($LKey, null)", lv, lv);
 			builder.endControlFlow();
 		}
 
-		builder.endControlFlow().addStatement("reader.readEndArray()");
+		builder.endControlFlow();
+		builder.addStatement("reader.readEndDocument()");
 
 		builder.addStatement(ctx.setter("$L"), lv);
 
@@ -186,42 +179,15 @@ public class CollectionCodeGen extends CompoundCodeGen {
 
 	}
 
-	private static Map<String, Class<?>> defaultCollImpl = new HashMap<>();
 	private static Set<String> permitNullCollections = new HashSet<>();
 
 	static {
-		addToDefaultCollImpl(Collection.class, ArrayList.class);
-		addToDefaultCollImpl(List.class, ArrayList.class);
-		addToDefaultCollImpl(Set.class, LinkedHashSet.class);
-		addToDefaultCollImpl(SortedSet.class, TreeSet.class);
-		addToDefaultCollImpl(NavigableSet.class, TreeSet.class);
-		addToDefaultCollImpl(BlockingDeque.class, LinkedBlockingDeque.class);
-		addToDefaultCollImpl(BlockingQueue.class, LinkedBlockingQueue.class);
-		addToDefaultCollImpl(Deque.class, LinkedBlockingDeque.class);
-		addToDefaultCollImpl(Queue.class, LinkedBlockingQueue.class);
-		addToDefaultCollImpl(TransferQueue.class, LinkedTransferQueue.class);
-
-		permitNullCollections.addAll(Arrays.asList(ArrayList.class.getCanonicalName(),
-				LinkedList.class.getCanonicalName(), HashSet.class.getCanonicalName(),
-				HashMap.class.getCanonicalName(), LinkedHashSet.class.getCanonicalName(),
-				LinkedHashMap.class.getCanonicalName(), TreeSet.class.getCanonicalName(),
-				TreeMap.class.getCanonicalName(),
-				IdentityHashMap.class.getCanonicalName(),
-				EnumMap.class.getCanonicalName(),
-				CopyOnWriteArrayList.class.getCanonicalName(),
-				CopyOnWriteArraySet.class.getCanonicalName()));
-	}
-
-	private static void addToDefaultCollImpl(Class<?> interfaceClass,
-			Class<?> implClass) {
-		defaultCollImpl.put(Util
-				.erasure(Util.elementUtils
-						.getTypeElement(interfaceClass.getCanonicalName()).asType())
-				.toString(), implClass);
-	}
-
-	private Class<?> getDefaultImplementation() {
-		return defaultCollImpl.get(Util.erasure(this.getType()).toString());
+		permitNullCollections.addAll(Arrays.asList(HashMap.class.getCanonicalName(),
+				LinkedHashMap.class.getCanonicalName(), TreeMap.class.getCanonicalName(),
+				IdentityHashMap.class.getCanonicalName()));
+		// permit null: EnumMap (values)
+		// not permit null: EnumMap (keys)
+		// not permit null: ConcurrentHashMap, ConcurrentSkipListMap
 	}
 
 	private boolean permitNullElements() {

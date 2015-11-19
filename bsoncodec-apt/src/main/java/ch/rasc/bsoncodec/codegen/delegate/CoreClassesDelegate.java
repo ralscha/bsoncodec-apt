@@ -15,9 +15,6 @@
  */
 package ch.rasc.bsoncodec.codegen.delegate;
 
-import java.time.Instant;
-import java.time.Month;
-import java.time.Year;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
