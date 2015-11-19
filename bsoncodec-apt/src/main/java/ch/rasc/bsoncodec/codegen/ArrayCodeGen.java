@@ -68,9 +68,7 @@ public class ArrayCodeGen extends CompoundCodeGen {
 				ctx.getLoopVar() + "Array[" + ctx.getLoopVar() + "]"));
 
 		if (!childType.getKind().isPrimitive() && !field.disableEncodeNullCheck()) {
-			if (field.storeNullValue()) {
-				builder.nextControlFlow("else").addStatement("writer.writeNull()");
-			}
+			builder.nextControlFlow("else").addStatement("writer.writeNull()");
 			builder.endControlFlow();
 		}
 

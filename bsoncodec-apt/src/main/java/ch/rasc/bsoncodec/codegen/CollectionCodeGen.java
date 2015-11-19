@@ -110,9 +110,7 @@ public class CollectionCodeGen extends CompoundCodeGen {
 				ctx.createEncodeChildContext(String.valueOf(ctx.getLoopVar())));
 
 		if (!field.disableEncodeNullCheck() && permittNullElements) {
-			if (field.storeNullValue()) {
-				builder.nextControlFlow("else").addStatement("writer.writeNull()");
-			}
+			builder.nextControlFlow("else").addStatement("writer.writeNull()");
 			builder.endControlFlow();
 		}
 
@@ -159,7 +157,7 @@ public class CollectionCodeGen extends CompoundCodeGen {
 				"while ((bsonType = reader.readBsonType()) != $T.END_OF_DOCUMENT)",
 				BsonType.class);
 
-		boolean permittNullElements = permitNullElements();		
+		boolean permittNullElements = permitNullElements();
 		if (permittNullElements) {
 			builder.beginControlFlow("if (bsonType != $T.NULL)", BsonType.class);
 		}
