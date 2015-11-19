@@ -19,9 +19,9 @@ import ch.rasc.bsoncodec.annotation.BsonDocument;
 import ch.rasc.bsoncodec.annotation.Id;
 
 @BsonDocument
-public class StringToUuidWoGeneratorPojo {
+public class StringBase64ToUuidWoGeneratorPojo {
 
-	@Id(conversion = Id.IdConversion.HEX_UUID)
+	@Id(conversion = Id.IdConversion.BASE64_UUID)
 	private String uuid;
 
 	private int data;

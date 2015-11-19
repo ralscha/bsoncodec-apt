@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.id;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -329,19 +330,19 @@ public class IdTest extends AbstractMongoDBTest {
 	public void testHexStringIdToUUID() {
 		MongoDatabase db = connect();
 
-		StringToUuidPojo pojo = new StringToUuidPojo();
+		StringHexToUuidPojo pojo = new StringHexToUuidPojo();
 		pojo.setUuid(null);
 		pojo.setData(7);
 
-		MongoCollection<StringToUuidPojo> coll = db.getCollection("StringToUuidPojo",
-				StringToUuidPojo.class);
+		MongoCollection<StringHexToUuidPojo> coll = db
+				.getCollection("StringHexToUuidPojo", StringHexToUuidPojo.class);
 		coll.insertOne(pojo);
 		assertThat(pojo.getUuid()).isNotNull();
 
-		StringToUuidPojo readPojo = coll.find().first();
+		StringHexToUuidPojo readPojo = coll.find().first();
 		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
 
-		Document doc = db.getCollection("StringToUuidPojo").find().first();
+		Document doc = db.getCollection("StringHexToUuidPojo").find().first();
 		assertThat(doc).hasSize(2);
 		assertThat(doc.get("_id")).isEqualTo(UUID.fromString(pojo.getUuid()));
 		assertThat(doc.get("data")).isEqualTo(7);
@@ -352,18 +353,18 @@ public class IdTest extends AbstractMongoDBTest {
 		MongoDatabase db = connect();
 
 		UUID uuid = UUID.randomUUID();
-		StringToUuidPojo pojo = new StringToUuidPojo();
+		StringHexToUuidPojo pojo = new StringHexToUuidPojo();
 		pojo.setUuid(uuid.toString());
 		pojo.setData(8);
 
-		MongoCollection<StringToUuidPojo> coll = db.getCollection("StringToUuidPojo",
-				StringToUuidPojo.class);
+		MongoCollection<StringHexToUuidPojo> coll = db
+				.getCollection("StringHexToUuidPojo", StringHexToUuidPojo.class);
 		coll.insertOne(pojo);
 
-		StringToUuidPojo readPojo = coll.find().first();
+		StringHexToUuidPojo readPojo = coll.find().first();
 		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
 
-		Document doc = db.getCollection("StringToUuidPojo").find().first();
+		Document doc = db.getCollection("StringHexToUuidPojo").find().first();
 		assertThat(doc).hasSize(2);
 		assertThat(doc.get("_id")).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(8);
@@ -374,18 +375,97 @@ public class IdTest extends AbstractMongoDBTest {
 		MongoDatabase db = connect();
 
 		UUID uuid = UUID.randomUUID();
-		StringToUuidWoGeneratorPojo pojo = new StringToUuidWoGeneratorPojo();
+		StringHexToUuidWoGeneratorPojo pojo = new StringHexToUuidWoGeneratorPojo();
 		pojo.setUuid(uuid.toString());
 		pojo.setData(9);
 
-		MongoCollection<StringToUuidWoGeneratorPojo> coll = db.getCollection(
-				"StringToUuidWoGeneratorPojo", StringToUuidWoGeneratorPojo.class);
+		MongoCollection<StringHexToUuidWoGeneratorPojo> coll = db.getCollection(
+				"StringHexToUuidWoGeneratorPojo", StringHexToUuidWoGeneratorPojo.class);
 		coll.insertOne(pojo);
 
-		StringToUuidWoGeneratorPojo readPojo = coll.find().first();
+		StringHexToUuidWoGeneratorPojo readPojo = coll.find().first();
 		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
 
-		Document doc = db.getCollection("StringToUuidWoGeneratorPojo").find().first();
+		Document doc = db.getCollection("StringHexToUuidWoGeneratorPojo").find().first();
+		assertThat(doc).hasSize(2);
+		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(doc.get("data")).isEqualTo(9);
+	}
+
+	@Test
+	public void testBase64StringIdToUUID() {
+		MongoDatabase db = connect();
+
+		StringBase64ToUuidPojo pojo = new StringBase64ToUuidPojo();
+		pojo.setUuid(null);
+		pojo.setData(7);
+
+		MongoCollection<StringBase64ToUuidPojo> coll = db
+				.getCollection("StringBase64ToUuidPojo", StringBase64ToUuidPojo.class);
+		coll.insertOne(pojo);
+		assertThat(pojo.getUuid()).isNotNull();
+
+		StringBase64ToUuidPojo readPojo = coll.find().first();
+		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+
+		Document doc = db.getCollection("StringBase64ToUuidPojo").find().first();
+		assertThat(doc).hasSize(2);
+
+		ByteBuffer bb = ByteBuffer.wrap(Base64.getUrlDecoder().decode(pojo.getUuid()));
+		UUID id = new UUID(bb.getLong(), bb.getLong());
+		assertThat(doc.get("_id")).isEqualTo(id);
+		assertThat(doc.get("data")).isEqualTo(7);
+	}
+
+	@Test
+	public void testBase64StringIdToUUIDPreset() {
+		MongoDatabase db = connect();
+
+		UUID uuid = UUID.randomUUID();
+		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+
+		StringBase64ToUuidPojo pojo = new StringBase64ToUuidPojo();
+		pojo.setUuid(Base64.getUrlEncoder().encodeToString(bb.array()));
+		pojo.setData(8);
+
+		MongoCollection<StringBase64ToUuidPojo> coll = db
+				.getCollection("StringBase64ToUuidPojo", StringBase64ToUuidPojo.class);
+		coll.insertOne(pojo);
+
+		StringBase64ToUuidPojo readPojo = coll.find().first();
+		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+
+		Document doc = db.getCollection("StringBase64ToUuidPojo").find().first();
+		assertThat(doc).hasSize(2);
+		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(doc.get("data")).isEqualTo(8);
+	}
+
+	@Test
+	public void testBase64StringIdToUUIDWoGenerator() {
+		MongoDatabase db = connect();
+
+		UUID uuid = UUID.randomUUID();
+		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+
+		StringBase64ToUuidWoGeneratorPojo pojo = new StringBase64ToUuidWoGeneratorPojo();
+		pojo.setUuid(Base64.getUrlEncoder().encodeToString(bb.array()));
+		pojo.setData(9);
+
+		MongoCollection<StringBase64ToUuidWoGeneratorPojo> coll = db.getCollection(
+				"StringBase64ToUuidWoGeneratorPojo",
+				StringBase64ToUuidWoGeneratorPojo.class);
+		coll.insertOne(pojo);
+
+		StringBase64ToUuidWoGeneratorPojo readPojo = coll.find().first();
+		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+
+		Document doc = db.getCollection("StringBase64ToUuidWoGeneratorPojo").find()
+				.first();
 		assertThat(doc).hasSize(2);
 		assertThat(doc.get("_id")).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(9);
@@ -395,12 +475,12 @@ public class IdTest extends AbstractMongoDBTest {
 	public void testHexStringIdToUUIDWoGeneratorIdNotSet() {
 		MongoDatabase db = connect();
 
-		StringToUuidWoGeneratorPojo pojo = new StringToUuidWoGeneratorPojo();
+		StringHexToUuidWoGeneratorPojo pojo = new StringHexToUuidWoGeneratorPojo();
 		pojo.setUuid(null);
 		pojo.setData(9);
 
-		MongoCollection<StringToUuidWoGeneratorPojo> coll = db.getCollection(
-				"StringToUuidWoGeneratorPojo", StringToUuidWoGeneratorPojo.class);
+		MongoCollection<StringHexToUuidWoGeneratorPojo> coll = db.getCollection(
+				"StringHexToUuidWoGeneratorPojo", StringHexToUuidWoGeneratorPojo.class);
 		coll.insertOne(pojo);
 	}
 

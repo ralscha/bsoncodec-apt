@@ -79,10 +79,15 @@ public @interface Id {
 	 * <td>{@link ObjectId}</td>
 	 * </tr>
 	 * <tr>
+	 * <td>{@link IdConversion#BASE64_UUID }</td>
+	 * <td>Base64 String</td>
+	 * <td>{@link UUID}</td>
+	 * </tr> 
+	 * <tr>
 	 * <td>{@link IdConversion#HEX_UUID }</td>
 	 * <td>Hex String</td>
 	 * <td>{@link UUID}</td>
-	 * </tr>
+	 * </tr> 
 	 * </table>
 	 */
 	IdConversion conversion() default IdConversion.NULL;
@@ -97,7 +102,7 @@ public @interface Id {
 	Class<? extends Codec<?>> codec() default NullCodec.class;
 
 	public static enum IdConversion {
-		BASE64_OBJECTID, HEX_OBJECTID, HEX_UUID, NULL
+		BASE64_OBJECTID, HEX_OBJECTID, BASE64_UUID, HEX_UUID, NULL
 	}
 
 	public static class NullIdGenerator implements IdGenerator {

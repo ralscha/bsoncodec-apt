@@ -653,7 +653,8 @@ public class CodecCodeGenerator {
 				|| idModel.conversion() == IdConversion.HEX_OBJECTID) {
 			builder.codeGen(new ConversionObjectIdCodeGen());
 		}
-		else if (idModel.conversion() == IdConversion.HEX_UUID) {
+		else if (idModel.conversion() == IdConversion.BASE64_UUID ||
+				idModel.conversion() == IdConversion.HEX_UUID) {
 			builder.codeGen(new ConversionUUIDCodeGen());
 		}
 		else {

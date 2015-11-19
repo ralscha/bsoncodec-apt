@@ -15,6 +15,8 @@
  */
 package ch.rasc.bsoncodec.codegen;
 
+import java.nio.ByteBuffer;
+import java.util.Base64;
 import java.util.UUID;
 
 import org.omg.IOP.Codec;
@@ -22,7 +24,9 @@ import org.omg.IOP.Codec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec.Builder;
 
+import ch.rasc.bsoncodec.annotation.Id.IdConversion;
 import ch.rasc.bsoncodec.model.FieldModel;
+import ch.rasc.bsoncodec.model.IdModel;
 import ch.rasc.bsoncodec.model.ImmutableInstanceField;
 
 public class ConversionUUIDCodeGen implements CodeGen {
@@ -30,23 +34,51 @@ public class ConversionUUIDCodeGen implements CodeGen {
 	@Override
 	public void addEncodeStatements(CodeGeneratorContext ctx) {
 		FieldModel field = ctx.field();
+		IdModel idModel = field.idModel();
 		Builder builder = ctx.builder();
 
-		if (ctx.field().idModel().generatorName() != null) {
+		if (idModel.generatorName() != null) {
 			builder.addStatement("$T id", UUID.class)
 					.beginControlFlow("if ($L == null)", ctx.getter())
 					.addStatement("id = ($T)this.$N.generate()", UUID.class,
 							field.idModel().generatorName());
 
-			builder.addStatement(ctx.setter("id.toString()"));
+			if (idModel.conversion() == IdConversion.HEX_UUID) {
+				builder.addStatement(ctx.setter("id.toString()"));
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_UUID) {
+				builder.addStatement("$T bb = $T.wrap(new byte[16])", ByteBuffer.class,
+						ByteBuffer.class);
+				builder.addStatement("bb.putLong(id.getMostSignificantBits())");
+				builder.addStatement("bb.putLong(id.getLeastSignificantBits())");
+				builder.addStatement(
+						ctx.setter("$T.getUrlEncoder().encodeToString(bb.array())"),
+						Base64.class);
+			}
 			builder.nextControlFlow("else");
 
-			builder.addStatement("id = $T.fromString($L)", UUID.class, ctx.getter());
+			if (idModel.conversion() == IdConversion.HEX_UUID) {
+				builder.addStatement("id = $T.fromString($L)", UUID.class, ctx.getter());
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_UUID) {
+				builder.addStatement("$T bb = $T.wrap($T.getUrlDecoder().decode($L))",
+						ByteBuffer.class, ByteBuffer.class, Base64.class, ctx.getter());
+				builder.addStatement("id = new $T(bb.getLong(), bb.getLong())",
+						UUID.class);
+			}
 			builder.endControlFlow();
 		}
 		else {
-			builder.addStatement("$T id = $T.fromString($L)", UUID.class, UUID.class,
-					ctx.getter());
+			if (idModel.conversion() == IdConversion.HEX_UUID) {
+				builder.addStatement("$T id = $T.fromString($L)", UUID.class, UUID.class,
+						ctx.getter());
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_UUID) {
+				builder.addStatement("$T bb = $T.wrap($T.getUrlDecoder().decode($L))",
+						ByteBuffer.class, ByteBuffer.class, Base64.class, ctx.getter());
+				builder.addStatement("$T id = new $T(bb.getLong(), bb.getLong())",
+						UUID.class, UUID.class);
+			}
 		}
 
 		ctx.builder().addStatement("writer.writeName($S)", field.name())
@@ -61,10 +93,23 @@ public class ConversionUUIDCodeGen implements CodeGen {
 	@Override
 	public void addDecodeStatements(CodeGeneratorContext ctx) {
 		Builder builder = ctx.builder();
+		IdModel idModel = ctx.field().idModel();
 
 		builder.addStatement("$T id = this.uUIDCodec.decode(reader, decoderContext)",
 				UUID.class);
-		builder.addStatement(ctx.setter("id.toString()"));
+
+		if (idModel.conversion() == IdConversion.HEX_UUID) {
+			builder.addStatement(ctx.setter("id.toString()"));
+		}
+		else if (idModel.conversion() == IdConversion.BASE64_UUID) {
+			builder.addStatement("$T bb = $T.wrap(new byte[16])", ByteBuffer.class,
+					ByteBuffer.class);
+			builder.addStatement("bb.putLong(id.getMostSignificantBits())");
+			builder.addStatement("bb.putLong(id.getLeastSignificantBits())");
+			builder.addStatement(
+					ctx.setter("$T.getUrlEncoder().encodeToString(bb.array())"),
+					Base64.class);
+		}
 	}
 
 }
