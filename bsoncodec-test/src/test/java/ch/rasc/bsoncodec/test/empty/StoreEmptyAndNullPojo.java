@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec.test.empty;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -34,6 +35,12 @@ public class StoreEmptyAndNullPojo {
 	private List<Integer> emptyList;
 
 	private List<String> notEmptyList;
+
+	private Map<String, Long> nullMap;
+
+	private Map<String, Long> emptyMap;
+
+	private Map<String, Long> notEmptyMap;
 
 	public ObjectId getId() {
 		return this.id;
@@ -81,6 +88,30 @@ public class StoreEmptyAndNullPojo {
 
 	public void setNonNullValue(String nonNullValue) {
 		this.nonNullValue = nonNullValue;
+	}
+
+	public Map<String, Long> getNullMap() {
+		return this.nullMap;
+	}
+
+	public void setNullMap(Map<String, Long> nullMap) {
+		this.nullMap = nullMap;
+	}
+
+	public Map<String, Long> getEmptyMap() {
+		return this.emptyMap;
+	}
+
+	public void setEmptyMap(Map<String, Long> emptyMap) {
+		this.emptyMap = emptyMap;
+	}
+
+	public Map<String, Long> getNotEmptyMap() {
+		return this.notEmptyMap;
+	}
+
+	public void setNotEmptyMap(Map<String, Long> notEmptyMap) {
+		this.notEmptyMap = notEmptyMap;
 	}
 
 }
