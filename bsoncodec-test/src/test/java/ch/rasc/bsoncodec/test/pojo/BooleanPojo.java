@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec.test.pojo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -35,6 +36,7 @@ public class BooleanPojo {
 	private Boolean[][] array2;
 	private List<Boolean> list;
 	private Set<Boolean> set;
+	private Map<String, Boolean> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -106,6 +108,14 @@ public class BooleanPojo {
 
 	public void setArray2(Boolean[][] array2) {
 		this.array2 = array2;
+	}
+
+	public Map<String, Boolean> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, Boolean> map) {
+		this.map = map;
 	}
 
 }

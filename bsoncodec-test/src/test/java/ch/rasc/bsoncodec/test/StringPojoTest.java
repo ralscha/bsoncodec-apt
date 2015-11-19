@@ -18,10 +18,13 @@ package ch.rasc.bsoncodec.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -62,6 +65,14 @@ public class StringPojoTest extends AbstractMongoDBTest {
 		set.add("eee");
 		set.add("fff");
 		pojo.setSet(set);
+
+		Map<Integer, String> map = new HashMap<>();
+		map.put(1, "one");
+		map.put(2, "two");
+		map.put(3, "three");
+		map.put(4, null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -88,6 +99,7 @@ public class StringPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -108,7 +120,7 @@ public class StringPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(6);
+		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo("a");
 		assertThat((List<String>) doc.get("array")).containsExactly("b", "cc", "ddd");
@@ -116,6 +128,10 @@ public class StringPojoTest extends AbstractMongoDBTest {
 				Arrays.asList("111", "112"), Arrays.asList("221", "222"));
 		assertThat((List<String>) doc.get("list")).containsExactly("zxy", "yxz");
 		assertThat((List<String>) doc.get("set")).containsOnly("eee", "fff");
+
+		assertThat((Map<String, String>) doc.get("map")).containsOnly(
+				MapEntry.entry("1", "one"), MapEntry.entry("2", "two"),
+				MapEntry.entry("3", "three"), MapEntry.entry("4", null));
 	}
 
 	@Test

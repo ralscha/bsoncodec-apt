@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec.test.pojo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -33,6 +34,7 @@ public class AtomicLongPojo {
 	private AtomicLong[][] array2;
 	private List<AtomicLong> list;
 	private Set<AtomicLong> set;
+	private Map<String, AtomicLong> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class AtomicLongPojo {
 
 	public void setSet(Set<AtomicLong> set) {
 		this.set = set;
+	}
+
+	public Map<String, AtomicLong> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, AtomicLong> map) {
+		this.map = map;
 	}
 
 }

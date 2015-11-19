@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec.test.pojo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,6 +34,7 @@ public class AtomicBooleanPojo {
 	private AtomicBoolean[][] array2;
 	private List<AtomicBoolean> list;
 	private Set<AtomicBoolean> set;
+	private Map<String, AtomicBoolean> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class AtomicBooleanPojo {
 
 	public void setSet(Set<AtomicBoolean> set) {
 		this.set = set;
+	}
+
+	public Map<String, AtomicBoolean> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, AtomicBoolean> map) {
+		this.map = map;
 	}
 
 }

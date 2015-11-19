@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec.test.pojo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +34,7 @@ public class AtomicIntegerPojo {
 	private AtomicInteger[][] array2;
 	private List<AtomicInteger> list;
 	private Set<AtomicInteger> set;
+	private Map<String, AtomicInteger> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class AtomicIntegerPojo {
 
 	public void setSet(Set<AtomicInteger> set) {
 		this.set = set;
+	}
+
+	public Map<String, AtomicInteger> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, AtomicInteger> map) {
+		this.map = map;
 	}
 
 }

@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.embedded;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -28,6 +29,7 @@ public class Order {
 	private Date date;
 	private Address address;
 	private List<OrderItem> orderItems;
+	private Map<String, Phase> phases;
 
 	public ObjectId getId() {
 		return this.id;
@@ -59,6 +61,14 @@ public class Order {
 
 	public void setOrderItems(List<OrderItem> orderItems) {
 		this.orderItems = orderItems;
+	}
+
+	public Map<String, Phase> getPhases() {
+		return this.phases;
+	}
+
+	public void setPhases(Map<String, Phase> phases) {
+		this.phases = phases;
 	}
 
 }

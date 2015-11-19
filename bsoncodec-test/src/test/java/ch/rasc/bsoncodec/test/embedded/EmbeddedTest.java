@@ -17,9 +17,13 @@ package ch.rasc.bsoncodec.test.embedded;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -62,10 +66,25 @@ public class EmbeddedTest extends AbstractMongoDBTest {
 		orderItem.setPrice(100.45);
 		orderItem.setQuantity(10);
 
+		Map<String, Phase> phases = new HashMap<>();
+		Phase p1 = new Phase();
+		Date p1Date = new Date();
+		p1.setDate(p1Date);
+		p1.setPerson("Joe");
+		phases.put("p1", p1);
+
+		Phase p2 = new Phase();
+		Date p2Date = Date.from(LocalDate.of(2017, 1, 1).atStartOfDay()
+				.atZone(ZoneOffset.UTC).toInstant());
+		p2.setDate(p2Date);
+		p2.setPerson("Susan");
+		phases.put("p2", p2);
+
 		Order pojo = new Order();
 		pojo.setDate(date);
 		pojo.setAddress(address);
 		pojo.setOrderItems(Arrays.asList(orderItem));
+		pojo.setPhases(phases);
 
 		MongoCollection<Order> coll = db.getCollection("Order", Order.class);
 		coll.insertOne(pojo);
@@ -74,10 +93,11 @@ public class EmbeddedTest extends AbstractMongoDBTest {
 		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
 
 		Document doc = db.getCollection("Order").find().first();
-		assertThat(doc).hasSize(4);
+		assertThat(doc).hasSize(5);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("date")).isEqualTo(date);
 		assertThat(doc.get("address")).isInstanceOf(Document.class);
+		assertThat(doc.get("phases")).isInstanceOf(Document.class);
 		List<Document> orderItems = (List<Document>) doc.get("orderItems");
 		assertThat(orderItems).hasSize(1);
 
@@ -93,6 +113,18 @@ public class EmbeddedTest extends AbstractMongoDBTest {
 		assertThat(orderItemDoc.get("partNo")).isEqualTo("partNo");
 		assertThat(orderItemDoc.getDouble("price")).isEqualTo(100.45);
 		assertThat(orderItemDoc.getInteger("quantity")).isEqualTo(10);
+
+		Document phaseDoc = (Document) doc.get("phases");
+		assertThat(phaseDoc).hasSize(2);
+		Document p1Doc = (Document) phaseDoc.get("p1");
+		assertThat(p1Doc).hasSize(2);
+		assertThat(p1Doc.get("date")).isEqualTo(p1Date);
+		assertThat(p1Doc.get("person")).isEqualTo("Joe");
+
+		Document p2Doc = (Document) phaseDoc.get("p2");
+		assertThat(p2Doc).hasSize(2);
+		assertThat(p2Doc.get("date")).isEqualTo(p2Date);
+		assertThat(p2Doc.get("person")).isEqualTo("Susan");
 	}
 
 }

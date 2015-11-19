@@ -85,7 +85,7 @@ public class YearPojo {
 	}
 
 	public Map<String, Year> getMap() {
-		return map;
+		return this.map;
 	}
 
 	public void setMap(Map<String, Year> map) {

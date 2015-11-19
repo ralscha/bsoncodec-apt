@@ -18,11 +18,14 @@ package ch.rasc.bsoncodec.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -64,6 +67,14 @@ public class AtomicLongPojoTest extends AbstractMongoDBTest {
 		Set<AtomicLong> set = new HashSet<>();
 		set.add(new AtomicLong(7L));
 		pojo.setSet(set);
+
+		Map<String, AtomicLong> map = new HashMap<>();
+		map.put("one", new AtomicLong(1L));
+		map.put("two", new AtomicLong(2L));
+		map.put("three", new AtomicLong(3L));
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -105,6 +116,7 @@ public class AtomicLongPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -126,7 +138,7 @@ public class AtomicLongPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(6);
+		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(pojo.getScalar().get());
 		assertThat((List<Long>) doc.get("array")).containsExactly(2L, 3L);
@@ -134,6 +146,10 @@ public class AtomicLongPojoTest extends AbstractMongoDBTest {
 				.containsExactly(Arrays.asList(4L), Arrays.asList(5L));
 		assertThat((List<Long>) doc.get("list")).containsExactly(6L);
 		assertThat((List<Long>) doc.get("set")).containsExactly(7L);
+
+		assertThat((Map<String, Long>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", 1L), MapEntry.entry("two", 2L),
+				MapEntry.entry("three", 3L), MapEntry.entry("null", null));
 	}
 
 	@Test

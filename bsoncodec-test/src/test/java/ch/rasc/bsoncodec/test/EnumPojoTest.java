@@ -19,10 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -67,6 +70,14 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 		set.add(Day.MONDAY);
 		set.add(Day.FRIDAY);
 		pojo.setSet(set);
+
+		Map<String, Day> map = new HashMap<>();
+		map.put("one", Day.MONDAY);
+		map.put("two", Day.TUESDAY);
+		map.put("three", Day.WEDNESDAY);
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -98,6 +109,7 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getEnumSet1()).isNull();
 		assertThat(empty.getEnumSet2()).isNull();
 		assertThat(empty.getEnumSet3()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -118,7 +130,7 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(8);
+		assertThat(doc).hasSize(9);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(Day.MONDAY.name());
 		assertThat((List<String>) doc.get("array")).containsExactly(Day.TUESDAY.name(),
@@ -134,6 +146,12 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 				Day.MONDAY.name(), Day.TUESDAY.name(), Day.WEDNESDAY.name(),
 				Day.THURSDAY.name(), Day.FRIDAY.name(), Day.SATURDAY.name());
 		assertThat((List<String>) doc.get("enumSet3")).isNull();
+
+		assertThat((Map<String, String>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", Day.MONDAY.name()),
+				MapEntry.entry("two", Day.TUESDAY.name()),
+				MapEntry.entry("three", Day.WEDNESDAY.name()),
+				MapEntry.entry("null", null));
 	}
 
 	@Test

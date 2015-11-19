@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.pojo;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -34,6 +35,7 @@ public class EnumPojo {
 	private EnumSet<Day> enumSet1;
 	private EnumSet<Day> enumSet2;
 	private EnumSet<Day> enumSet3;
+	private Map<String, Day> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -105,6 +107,14 @@ public class EnumPojo {
 
 	public void setEnumSet3(EnumSet<Day> enumSet3) {
 		this.enumSet3 = enumSet3;
+	}
+
+	public Map<String, Day> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, Day> map) {
+		this.map = map;
 	}
 
 }

@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.pojo;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -33,6 +34,7 @@ public class InstantPojo {
 	private Instant[][] array2;
 	private List<Instant> list;
 	private Set<Instant> set;
+	private Map<String, Instant> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class InstantPojo {
 
 	public void setSet(Set<Instant> set) {
 		this.set = set;
+	}
+
+	public Map<String, Instant> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, Instant> map) {
+		this.map = map;
 	}
 
 }

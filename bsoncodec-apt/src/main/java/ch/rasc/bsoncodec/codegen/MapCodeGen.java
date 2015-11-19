@@ -88,11 +88,13 @@ public class MapCodeGen extends CompoundCodeGen {
 		builder.beginControlFlow("for (Map.Entry<$T, $T> $L : $L.entrySet())", keyType,
 				childType, ctx.getLoopVar(), ctx.getter());
 
-		String loopVar = String.valueOf(ctx.getLoopVar());
-		if (!Util.isSameType(keyType, String.class)) {
-			loopVar += ".toString()";
+		if (Util.isSameType(keyType, String.class)) {
+			builder.addStatement("writer.writeName($L.getKey())", ctx.getLoopVar());
 		}
-		builder.addStatement("writer.writeName($L.getKey())", loopVar);
+		else {
+			builder.addStatement("writer.writeName($T.valueOf($L.getKey()))",
+					String.class, ctx.getLoopVar());
+		}
 
 		boolean permittNullElements = permitNullElements();
 		if (!field.disableEncodeNullCheck() && permittNullElements) {
@@ -147,7 +149,14 @@ public class MapCodeGen extends CompoundCodeGen {
 		builder.beginControlFlow(
 				"while ((bsonType = reader.readBsonType()) != $T.END_OF_DOCUMENT)",
 				BsonType.class);
-		builder.addStatement("String $LKey = reader.readName()", lv);
+
+		if (Util.isSameType(keyType, String.class)) {
+			builder.addStatement("String $LKey = reader.readName()", lv);
+		}
+		else {
+			builder.addStatement("$T $LKey = $T.valueOf(reader.readName())", keyType, lv,
+					keyType);
+		}
 
 		boolean permittNullElements = permitNullElements();
 		if (permittNullElements) {

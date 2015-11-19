@@ -19,10 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Month;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.ObjectIdGenerator;
@@ -77,6 +80,14 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 		Set<Month> set = new HashSet<>();
 		set.add(Month.of(12));
 		pojo.setSet(set);
+
+		Map<String, Month> map = new HashMap<>();
+		map.put("one", Month.of(1));
+		map.put("two", Month.of(2));
+		map.put("three", Month.of(3));
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -103,6 +114,7 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -123,7 +135,7 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(6);
+		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(1);
 		assertThat((List<Integer>) doc.get("array")).containsExactly(2, 3, 4);
@@ -131,6 +143,10 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 				.containsExactly(Arrays.asList(5), Arrays.asList(6, 7));
 		assertThat((List<Integer>) doc.get("list")).containsExactly(8, 9);
 		assertThat((List<Integer>) doc.get("set")).containsExactly(12);
+
+		assertThat((Map<String, Integer>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", 1), MapEntry.entry("two", 2),
+				MapEntry.entry("three", 3), MapEntry.entry("null", null));
 	}
 
 	@Test

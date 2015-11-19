@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.pojo;
 
 import java.time.Month;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -33,6 +34,7 @@ public class MonthPojo {
 	private Month[][] array2;
 	private List<Month> list;
 	private Set<Month> set;
+	private Map<String, Month> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class MonthPojo {
 
 	public void setSet(Set<Month> set) {
 		this.set = set;
+	}
+
+	public Map<String, Month> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<String, Month> map) {
+		this.map = map;
 	}
 
 }

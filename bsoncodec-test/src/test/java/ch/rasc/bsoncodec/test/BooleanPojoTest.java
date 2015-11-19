@@ -18,10 +18,13 @@ package ch.rasc.bsoncodec.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -65,6 +68,14 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 		Set<Boolean> set = new HashSet<>();
 		set.add(true);
 		pojo.setSet(set);
+
+		Map<String, Boolean> map = new HashMap<>();
+		map.put("one", true);
+		map.put("two", false);
+		map.put("three", true);
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -96,6 +107,7 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2Primitive()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -117,7 +129,7 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(9);
+		assertThat(doc).hasSize(10);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalarPrimitive")).isEqualTo(true);
 		assertThat(doc.get("scalar")).isEqualTo(false);
@@ -129,6 +141,10 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 				.containsExactly(Arrays.asList(false), Arrays.asList(true));
 		assertThat((List<Boolean>) doc.get("list")).containsExactly(true, false);
 		assertThat((List<Boolean>) doc.get("set")).containsExactly(true);
+
+		assertThat((Map<String, Boolean>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", true), MapEntry.entry("two", false),
+				MapEntry.entry("three", true), MapEntry.entry("null", null));
 	}
 
 	@Test

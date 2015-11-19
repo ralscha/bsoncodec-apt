@@ -145,10 +145,8 @@ public class YearPojoTest extends AbstractMongoDBTest {
 		assertThat((List<Integer>) doc.get("list")).containsExactly(2008, 2009);
 		assertThat((List<Integer>) doc.get("set")).containsExactly(2012);
 		assertThat((Map<String, Integer>) doc.get("map")).containsOnly(
-				MapEntry.entry("one", 2011),
-				MapEntry.entry("two", 2012),
-				MapEntry.entry("three", 2013),
-				MapEntry.entry("null", null));
+				MapEntry.entry("one", 2011), MapEntry.entry("two", 2012),
+				MapEntry.entry("three", 2013), MapEntry.entry("null", null));
 	}
 
 	@Test

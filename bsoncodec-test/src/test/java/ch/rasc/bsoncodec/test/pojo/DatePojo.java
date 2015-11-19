@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.pojo;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -33,6 +34,7 @@ public class DatePojo {
 	private Date[][] array2;
 	private List<Date> list;
 	private Set<Date> set;
+	private Map<Long, Date> map;
 
 	public ObjectId getId() {
 		return this.id;
@@ -80,6 +82,14 @@ public class DatePojo {
 
 	public void setSet(Set<Date> set) {
 		this.set = set;
+	}
+
+	public Map<Long, Date> getMap() {
+		return this.map;
+	}
+
+	public void setMap(Map<Long, Date> map) {
+		this.map = map;
 	}
 
 }

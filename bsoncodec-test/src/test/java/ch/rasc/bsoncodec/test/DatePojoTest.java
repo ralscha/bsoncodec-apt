@@ -21,10 +21,13 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -72,6 +75,14 @@ public class DatePojoTest extends AbstractMongoDBTest {
 		set.add(createDate(2015, 8, 8));
 		set.add(createDate(2015, 9, 9));
 		pojo.setSet(set);
+
+		Map<Long, Date> map = new HashMap<>();
+		map.put(1L, createDate(2017, 1, 1));
+		map.put(2L, createDate(2017, 1, 2));
+		map.put(3L, createDate(2017, 1, 3));
+		map.put(4L, null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -98,6 +109,7 @@ public class DatePojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -118,7 +130,7 @@ public class DatePojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(6);
+		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(createDate(2015, 1, 1));
 		assertThat((List<Date>) doc.get("array")).containsExactly(createDate(2015, 2, 1),
@@ -130,6 +142,11 @@ public class DatePojoTest extends AbstractMongoDBTest {
 				.containsExactly(createDate(2015, 12, 20));
 		assertThat((List<Date>) doc.get("set")).containsOnly(createDate(2015, 8, 8),
 				createDate(2015, 9, 9));
+
+		assertThat((Map<String, Date>) doc.get("map")).containsOnly(
+				MapEntry.entry("1", createDate(2017, 1, 1)),
+				MapEntry.entry("2", createDate(2017, 1, 2)),
+				MapEntry.entry("3", createDate(2017, 1, 3)), MapEntry.entry("4", null));
 	}
 
 	@Test

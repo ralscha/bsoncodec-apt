@@ -21,10 +21,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.ObjectIdGenerator;
@@ -88,6 +91,14 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 		set.add(createInstant(2016, 8, 8));
 		set.add(createInstant(2016, 9, 9));
 		pojo.setSet(set);
+
+		Map<String, Instant> map = new HashMap<>();
+		map.put("one", createInstant(2017, 1, 1));
+		map.put("two", createInstant(2017, 1, 2));
+		map.put("three", createInstant(2017, 1, 3));
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -116,6 +127,7 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -137,7 +149,7 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(6);
+		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalar")).isEqualTo(createInstant(2016, 1, 1).toEpochMilli());
 		assertThat((List<Long>) doc.get("array")).containsExactly(
@@ -154,6 +166,12 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 		assertThat((List<Long>) doc.get("set")).containsOnly(
 				createInstant(2016, 8, 8).toEpochMilli(),
 				createInstant(2016, 9, 9).toEpochMilli());
+
+		assertThat((Map<String, Long>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", createInstant(2017, 1, 1).toEpochMilli()),
+				MapEntry.entry("two", createInstant(2017, 1, 2).toEpochMilli()),
+				MapEntry.entry("three", createInstant(2017, 1, 3).toEpochMilli()),
+				MapEntry.entry("null", null));
 	}
 
 	@Test

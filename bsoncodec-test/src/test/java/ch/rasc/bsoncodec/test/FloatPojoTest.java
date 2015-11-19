@@ -18,10 +18,13 @@ package ch.rasc.bsoncodec.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.assertj.core.data.MapEntry;
 import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -65,6 +68,14 @@ public class FloatPojoTest extends AbstractMongoDBTest {
 		set.add(12.5f);
 		set.add(13.5f);
 		pojo.setSet(set);
+
+		Map<String, Float> map = new HashMap<>();
+		map.put("one", 1.5f);
+		map.put("two", 2.5f);
+		map.put("three", 3.5f);
+		map.put("null", null);
+		pojo.setMap(map);
+
 		coll.insertOne(pojo);
 		return pojo;
 	}
@@ -94,6 +105,7 @@ public class FloatPojoTest extends AbstractMongoDBTest {
 		assertThat(empty.getArray2Primitive()).isNull();
 		assertThat(empty.getList()).isNull();
 		assertThat(empty.getSet()).isNull();
+		assertThat(empty.getMap()).isNull();
 	}
 
 	@Test
@@ -114,7 +126,7 @@ public class FloatPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<Document> coll = db.getCollection(COLL_NAME);
 		Document doc = coll.find().first();
-		assertThat(doc).hasSize(9);
+		assertThat(doc).hasSize(10);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
 		assertThat(doc.get("scalarPrimitive"))
 				.isEqualTo((double) pojo.getScalarPrimitive());
@@ -128,6 +140,10 @@ public class FloatPojoTest extends AbstractMongoDBTest {
 				Arrays.asList(111.5d, 112.5d), Arrays.asList(221.5d, 222.5d));
 		assertThat((List<Double>) doc.get("list")).containsExactly(10.5d, 11.5d);
 		assertThat((List<Double>) doc.get("set")).containsOnly(12.5d, 13.5d);
+
+		assertThat((Map<String, Double>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", 1.5d), MapEntry.entry("two", 2.5d),
+				MapEntry.entry("three", 3.5d), MapEntry.entry("null", null));
 	}
 
 	@Test
