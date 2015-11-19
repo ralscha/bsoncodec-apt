@@ -36,6 +36,7 @@ import com.mongodb.client.model.Projections;
 
 import ch.rasc.bsoncodec.test.pojo.MonthPojo;
 import ch.rasc.bsoncodec.test.pojo.MonthPojoCodec;
+import ch.rasc.bsoncodec.time.MonthInt32Codec;
 
 public class MonthPojoTest extends AbstractMongoDBTest {
 
@@ -44,7 +45,7 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
 				MongoClient.getDefaultCodecRegistry(),
-				CodecRegistries.fromCodecs(new MonthPojoCodec(new ObjectIdGenerator())));
+				CodecRegistries.fromCodecs(new MonthInt32Codec(), new MonthPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
 				.withCodecRegistry(codecRegistry);

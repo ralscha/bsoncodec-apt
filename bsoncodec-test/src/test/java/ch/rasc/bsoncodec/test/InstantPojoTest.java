@@ -38,6 +38,7 @@ import com.mongodb.client.model.Projections;
 
 import ch.rasc.bsoncodec.test.pojo.InstantPojo;
 import ch.rasc.bsoncodec.test.pojo.InstantPojoCodec;
+import ch.rasc.bsoncodec.time.InstantInt64Codec;
 
 public class InstantPojoTest extends AbstractMongoDBTest {
 
@@ -46,7 +47,7 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries
 				.fromRegistries(MongoClient.getDefaultCodecRegistry(), CodecRegistries
-						.fromCodecs(new InstantPojoCodec(new ObjectIdGenerator())));
+						.fromCodecs(new InstantInt64Codec(), new InstantPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
 				.withCodecRegistry(codecRegistry);
