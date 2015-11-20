@@ -18,7 +18,6 @@ package ch.rasc.bsoncodec.codegen;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 
 import org.bson.BsonType;
@@ -93,8 +92,6 @@ public class ArrayCodeGen extends CompoundCodeGen {
 		Builder builder = ctx.builder();
 		char lv = ctx.getLoopVar();
 
-		CodeGeneratorContext childCtx = ctx.createDecodeChildContext(lv + "List.add(%s)");
-
 		if (!field.disableDecodeNullCheck() && !hasParent()) {
 			builder.beginControlFlow("if (bsonType != $T.NULL)", BsonType.class);
 		}
@@ -103,10 +100,11 @@ public class ArrayCodeGen extends CompoundCodeGen {
 
 		TypeMirror childType = this.getChildCodeGen().getType();
 
-		if (childType.getKind().isPrimitive()) {
-			builder.addStatement("$T<$T> $LList = new $T<>()", List.class,
-					Util.typeUtils.boxedClass((PrimitiveType) childType), lv,
-					ArrayList.class);
+		if (!Util.isArray(childType)) {
+			builder.addStatement("int $LCap = 16", lv);
+			builder.addStatement("int $LIx = 0", lv);
+			builder.addStatement("$T[] $LArray = new $T[$LCap]", childType, lv, childType,
+					lv);
 		}
 		else {
 			builder.addStatement("$T<$T> $LList = new $T<>()", List.class, childType, lv,
@@ -117,37 +115,55 @@ public class ArrayCodeGen extends CompoundCodeGen {
 				"while ((bsonType = reader.readBsonType()) != $T.END_OF_DOCUMENT)",
 				BsonType.class);
 
+		if (!Util.isArray(childType)) {
+			builder.beginControlFlow("if ($LIx == $LCap)", lv, lv);
+			builder.addStatement("$T[] newArray = new $T[$LCap*=2]", childType, childType,
+					lv);
+			builder.addStatement(
+					"System.arraycopy($LArray, 0, newArray, 0, $LArray.length)", lv, lv);
+			builder.addStatement("$LArray = newArray", lv);
+			builder.endControlFlow();
+		}
+
 		if (!field.disableDecodeNullCheck()) {
 			builder.beginControlFlow("if (bsonType != $T.NULL)", BsonType.class);
 		}
 
+		CodeGeneratorContext childCtx;
+		if (!Util.isArray(childType)) {
+			childCtx = ctx.createDecodeChildContext(lv + "Array[" + lv + "Ix] = %s");
+		}
+		else {
+			childCtx = ctx.createDecodeChildContext(lv + "List.add(%s)");
+		}
 		this.getChildCodeGen().addDecodeStatements(childCtx);
 
 		if (!field.disableDecodeNullCheck()) {
 			builder.nextControlFlow("else").addStatement("reader.readNull()");
-			builder.addStatement(lv + "List.add(null)");
-			builder.endControlFlow();
-		}
-
-		builder.endControlFlow().addStatement("reader.readEndArray()");
-
-		if (childType.getKind().isPrimitive()) {
-			builder.addStatement("$T[] $LArray = new $T[$LList.size()]", childType, lv,
-					childType, lv)
-					.beginControlFlow("for (int $L = 0; $L < $LList.size(); $L++)", lv,
-							lv, lv, lv)
-					.addStatement("$LArray[$L] = $LList.get($L)", lv, lv, lv, lv)
-					.endControlFlow().addStatement(ctx.setter("$LArray"), lv);
-		}
-		else {
-			if (Util.isArray(childType)) {
-				builder.addStatement(ctx.setter("$LList.toArray(new $T[]{})"), lv,
-						childType);
+			if (!Util.isArray(childType)) {
+				builder.addStatement("$LArray[$LIx] = null", lv, lv);
 			}
 			else {
-				builder.addStatement(ctx.setter("$LList.toArray(new $T[$LList.size()])"),
-						lv, childType, lv);
+				builder.addStatement(lv + "List.add(null)");
 			}
+			builder.endControlFlow();
+		}
+		if (!Util.isArray(childType)) {
+			builder.addStatement("$LIx++", lv);
+		}
+
+		builder.endControlFlow();
+		builder.addStatement("reader.readEndArray()");
+
+		if (!Util.isArray(childType)) {
+			builder.addStatement("$T[] $LFinalArray = new $T[$LIx]", childType, lv,
+					childType, lv);
+			builder.addStatement("System.arraycopy($LArray, 0, $LFinalArray, 0, $LIx)",
+					lv, lv, lv);
+			builder.addStatement(ctx.setter("$LFinalArray"), lv);
+		}
+		else {
+			builder.addStatement(ctx.setter("$LList.toArray(new $T[]{})"), lv, childType);
 		}
 
 		if (!field.disableDecodeNullCheck() && !hasParent()) {
