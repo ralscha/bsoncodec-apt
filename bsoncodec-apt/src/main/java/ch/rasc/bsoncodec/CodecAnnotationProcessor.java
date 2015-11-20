@@ -32,6 +32,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -48,28 +49,15 @@ import ch.rasc.bsoncodec.model.ImmutableCodecInfo;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class CodecAnnotationProcessor extends AbstractProcessor {
 
+	private final Map<String, List<CodecInfo>> codecInfosPerProvider = new HashMap<>();
+
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
 
-		this.processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-				"Running " + getClass().getSimpleName());
-
-		if (roundEnv.processingOver() || annotations.size() == 0) {
-			return false;
-		}
-
-		if (roundEnv.getRootElements() == null || roundEnv.getRootElements().isEmpty()) {
-			this.processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-					"No sources to process");
-			return false;
-		}
-
 		Util.elementUtils = this.processingEnv.getElementUtils();
 		Util.typeUtils = this.processingEnv.getTypeUtils();
 		Util.messager = this.processingEnv.getMessager();
-
-		Map<String, List<CodecInfo>> codecInfosPerProvider = new HashMap<>();
 
 		AnnotationHierarchyUtil hierarchyUtil = new AnnotationHierarchyUtil(
 				this.processingEnv.getTypeUtils());
@@ -81,7 +69,8 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 		for (TypeElement annotation : triggeringAnnotations) {
 			Set<? extends Element> elements = roundEnv
 					.getElementsAnnotatedWith(annotation).stream()
-					.filter(el -> el.getKind() == ElementKind.CLASS)
+					.filter(el -> el.getKind() == ElementKind.CLASS
+							&& !el.getModifiers().contains(Modifier.ABSTRACT))
 					.collect(Collectors.toSet());
 			for (Element element : elements) {
 				try {
@@ -95,7 +84,7 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 					}
 
 					String providerClassName = codeGen.getProviderClassName();
-					codecInfosPerProvider
+					this.codecInfosPerProvider
 							.computeIfAbsent(providerClassName, key -> new ArrayList<>())
 							.add(ImmutableCodecInfo.of(typeElement,
 									ClassName.get(codeGen.getPackageName(),
@@ -117,21 +106,23 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 		}
 
 		// Create Codec Providers
-		try {
-			for (Map.Entry<String, List<CodecInfo>> providerInfo : codecInfosPerProvider
-					.entrySet()) {
-				ProviderCodeGenerator codeGenerator = new ProviderCodeGenerator(
-						providerInfo.getKey(), providerInfo.getValue());
-				JavaFileObject jfo = this.processingEnv.getFiler()
-						.createSourceFile(codeGenerator.getFullyQualifiedName());
-				try (Writer writer = jfo.openWriter()) {
-					codeGenerator.generate(writer);
+		if (roundEnv.processingOver()) {
+			try {
+				for (Map.Entry<String, List<CodecInfo>> providerInfo : this.codecInfosPerProvider
+						.entrySet()) {
+					ProviderCodeGenerator codeGenerator = new ProviderCodeGenerator(
+							providerInfo.getKey(), providerInfo.getValue());
+					JavaFileObject jfo = this.processingEnv.getFiler()
+							.createSourceFile(codeGenerator.getFullyQualifiedName());
+					try (Writer writer = jfo.openWriter()) {
+						codeGenerator.generate(writer);
+					}
 				}
 			}
-		}
-		catch (IOException e) {
-			this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-					e.getMessage());
+			catch (IOException e) {
+				this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+						e.getMessage());
+			}
 		}
 
 		return false;

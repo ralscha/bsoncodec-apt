@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -367,60 +368,78 @@ public class CodecCodeGenerator {
 
 		}
 
-		Map<ElementKind, List<Element>> enclosedElements = this.typeElement
-				.getEnclosedElements().stream().filter(this::filterEnclosedElements)
-				.collect(Collectors.groupingBy(Element::getKind, Collectors.toList()));
+		TypeElement currentElement = this.typeElement;
+		Set<String> alreadyConsumed = new HashSet<>();
 
-		Map<String, String> getMethods = new HashMap<>();
-		Map<String, String> setMethods = new HashMap<>();
-		for (Element el : enclosedElements.get(ElementKind.METHOD)) {
-			ExecutableElement method = (ExecutableElement) el;
-			String methodName = method.getSimpleName().toString();
-			List<? extends VariableElement> params = method.getParameters();
-			TypeMirror returnType = method.getReturnType();
+		while (currentElement != null) {
+			Map<ElementKind, List<Element>> enclosedElements = currentElement
+					.getEnclosedElements().stream().filter(this::filterEnclosedElements)
+					.collect(
+							Collectors.groupingBy(Element::getKind, Collectors.toList()));
 
-			if (params.size() == 0) {
-				if (methodName.startsWith("get")) {
-					getMethods.put(Util.uncapitalize(methodName.substring(3)),
-							methodName);
+			Map<String, String> getMethods = new HashMap<>();
+			Map<String, String> setMethods = new HashMap<>();
+			for (Element el : enclosedElements.get(ElementKind.METHOD)) {
+				ExecutableElement method = (ExecutableElement) el;
+				String methodName = method.getSimpleName().toString();
+				List<? extends VariableElement> params = method.getParameters();
+				TypeMirror returnType = method.getReturnType();
+
+				if (params.size() == 0) {
+					if (methodName.startsWith("get")) {
+						getMethods.put(Util.uncapitalize(methodName.substring(3)),
+								methodName);
+					}
+					else if (methodName.startsWith("is")
+							&& returnType.getKind() == TypeKind.BOOLEAN) {
+						getMethods.put(Util.uncapitalize(methodName.substring(2)),
+								methodName);
+					}
 				}
-				else if (methodName.startsWith("is")
-						&& returnType.getKind() == TypeKind.BOOLEAN) {
-					getMethods.put(Util.uncapitalize(methodName.substring(2)),
+				else if (params.size() == 1 && returnType.getKind() == TypeKind.VOID
+						&& methodName.startsWith("set")) {
+					setMethods.put(Util.uncapitalize(methodName.substring(3)),
 							methodName);
 				}
 			}
-			else if (params.size() == 1 && returnType.getKind() == TypeKind.VOID
-					&& methodName.startsWith("set")) {
-				setMethods.put(Util.uncapitalize(methodName.substring(3)), methodName);
+
+			Element idElement = lookupId(enclosedElements.get(ElementKind.FIELD));
+
+			int index = 1;
+			for (Element el : enclosedElements.get(ElementKind.FIELD)) {
+				VariableElement varEl = (VariableElement) el;
+				String varName = varEl.getSimpleName().toString();
+				if (!alreadyConsumed.contains(varName)) {
+					alreadyConsumed.add(varName);
+
+					ImmutableFieldModel.Builder builder = ImmutableFieldModel.builder();
+					builder.storeEmptyCollection(globalStoreEmptyCollections);
+					builder.storeNullValue(globalStoreNullValues);
+					builder.varEl(varEl);
+
+					builder.methodNameSet(setMethods.get(varName));
+					builder.methodNameGet(getMethods.get(varName));
+
+					if (el == idElement) {
+						handleIdElement(builder, varEl);
+					}
+					else {
+						handleNormalElement(index, builder, varEl);
+					}
+
+					fields.add(builder.build());
+					index++;
+				}
 			}
-		}
 
-		Element idElement = lookupId(enclosedElements.get(ElementKind.FIELD));
-
-		int index = 1;
-		for (Element el : enclosedElements.get(ElementKind.FIELD)) {
-
-			ImmutableFieldModel.Builder builder = ImmutableFieldModel.builder();
-			builder.storeEmptyCollection(globalStoreEmptyCollections);
-			builder.storeNullValue(globalStoreNullValues);
-
-			VariableElement varEl = (VariableElement) el;
-			builder.varEl(varEl);
-
-			String varName = varEl.getSimpleName().toString();
-			builder.methodNameSet(setMethods.get(varName));
-			builder.methodNameGet(getMethods.get(varName));
-
-			if (el == idElement) {
-				handleIdElement(builder, varEl);
+			TypeMirror superclass = currentElement.getSuperclass();
+			if (Util.isSameType(superclass, Object.class)) {
+				currentElement = null;
 			}
 			else {
-				handleNormalElement(index, builder, varEl);
+				currentElement = (TypeElement) Util.typeUtils.asElement(superclass);
 			}
 
-			fields.add(builder.build());
-			index++;
 		}
 
 		Collections.sort(fields);
