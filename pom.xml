@@ -198,6 +198,7 @@
 						<exclude>.factorypath</exclude>
 						<exclude>mvnw</exclude>
 						<exclude>test/**/*</exclude>
+						<exclude>**/maven-wrapper.properties</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>
