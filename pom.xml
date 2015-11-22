@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -13,13 +12,13 @@
 	</prerequisites>
 
 	<groupId>ch.rasc</groupId>
-	<artifactId>bsoncodec-test</artifactId>
+	<artifactId>bsoncodec-apt</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
 	<inceptionYear>2015</inceptionYear>
 
-	<name>APT BSON Codec Generator Unit Tests</name>
-	<description>Unit tests for the APT BSON Codec Generator</description>
+	<name>APT BSON Codec Generator</name>
+	<description>Java 8 Annotation Processor creating org.bson.codecs.Codec implementations for POJOs</description>
 	<url>https://github.com/ralscha/bsoncodec-apt</url>
 
 	<developers>
@@ -51,59 +50,49 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-<!--
-	<repositories>
-		<repository>
-			<id>sonatype</id>
-			<name>sonatype</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
--->
+
 	<dependencies>
 		<dependency>
 			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver</artifactId>
+			<artifactId>bson</artifactId>
 			<version>3.1.1</version>
 		</dependency>
 
 		<dependency>
-			<groupId>ch.rasc</groupId>
-			<artifactId>bsoncodec</artifactId>
-			<version>1.0.0</version>
+			<groupId>com.squareup</groupId>
+			<artifactId>javapoet</artifactId>
+			<version>1.4.0</version>
 		</dependency>
 
 		<dependency>
-			<groupId>ch.rasc</groupId>
-			<artifactId>bsoncodec-apt</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>provided</scope>
+			<groupId>com.google.auto.service</groupId>
+			<artifactId>auto-service</artifactId>
+			<version>1.0-rc2</version>
 		</dependency>
 
 		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>1.50.0</version>
-			<scope>test</scope>
+			<groupId>org.immutables</groupId>
+			<artifactId>value</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>3.2.0</version>
-			<scope>test</scope>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 
+		<!-- TEST dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.testing.compile</groupId>
+			<artifactId>compile-testing</artifactId>
+			<version>0.8</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -121,6 +110,72 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+			</plugin>			
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+			</plugin>
+
+			<plugin>
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.11</version>
@@ -133,6 +188,7 @@
 						<email>ralphschaer@gmail.com</email>
 					</properties>
 					<excludes>
+						<exclude>**/AnnotationHierarchyUtil.java</exclude>
 						<exclude>**/*.xml</exclude>
 						<exclude>**/*.md</exclude>
 						<exclude>**/*.py</exclude>
@@ -141,6 +197,7 @@
 						<exclude>**/.gitignore</exclude>
 						<exclude>.factorypath</exclude>
 						<exclude>mvnw</exclude>
+						<exclude>test/**/*</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>
