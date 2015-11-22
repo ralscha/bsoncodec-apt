@@ -13,8 +13,7 @@ script:
   - chmod 700 ./mvnw
   - ./mvnw clean install
   - cd test
-  - chmod 700 ./mvnw
-  - ./mvnw clean test
+  - ../mvnw clean test
   
 env:
   global:
