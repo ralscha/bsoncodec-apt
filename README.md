@@ -52,7 +52,7 @@ To enable the annotation processor you need to add this dependency with scope pr
 	<dependency>
 		<groupId>ch.rasc</groupId>
 		<artifactId>bsoncodec-apt</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 		<scope>provided</scope>
 		<!-- or as optional -->
 		<!-- <optional>true</optional> -->
@@ -79,7 +79,7 @@ When the project already depends on the mongodb-driver there is no need to add t
 
 
 Released versions are available from the Maven Central Repository.
-To use SNAPSHOT releases you need to add the Sonatype Maven Repository
+To use SNAPSHOT releases you need to add the Sonatype Maven Repository to the pom.xml
 ```
 	<repositories>
 		<repository>
@@ -187,5 +187,5 @@ If this project does not work for you, here a list of other projects that may wo
 
 ## Changelog
 
-### 1.0.0 - tbd
+### 1.0.0 - November 22, 2015
   * Initial release
