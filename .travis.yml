@@ -10,10 +10,9 @@ jdk:
   - oraclejdk8
 
 script: 
-  - cd bsoncodec-apt
   - chmod 700 ./mvnw
   - ./mvnw clean install
-  - cd ../bsoncodec-test
+  - cd test
   - chmod 700 ./mvnw
   - ./mvnw clean test
   
