@@ -19,14 +19,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
+import org.assertj.core.api.Assertions;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -174,5 +180,65 @@ public class CollectionTest extends AbstractMongoDBTest {
 		assertThat((List<Integer>) doc.get("list1")).containsExactly(1, 2, 3);
 		assertThat((List<Integer>) doc.get("list2")).containsExactly(11);
 		assertThat((List<Integer>) doc.get("list3")).containsExactly(111, 112);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testUnknownTypes() {
+		MongoDatabase db = connect();
+
+		CollectionWithUnknownTypes pojo = new CollectionWithUnknownTypes();
+
+		List list = new ArrayList();
+		list.add(1);
+		list.add("2");
+		list.add(3.3d);
+		pojo.setList(list);
+
+		Set set = new HashSet();
+		set.add("1");
+		set.add(2);
+		set.add(3L);
+		set.add(true);
+		pojo.setSet(set);
+
+		Map map = new HashMap();
+		map.put(1, "one");
+		map.put("two", 2);
+		map.put("flag", true);
+		pojo.setMap(map);
+
+		Map stringObjectMap = new LinkedHashMap<>();
+		stringObjectMap.put("a", true);
+		stringObjectMap.put("b", 2);
+		stringObjectMap.put("c", 3.3d);
+		stringObjectMap.put("d", "string");
+		pojo.setStringObjectMap(stringObjectMap);
+
+		MongoCollection<CollectionWithUnknownTypes> coll = db.getCollection("unknown",
+				CollectionWithUnknownTypes.class);
+		coll.insertOne(pojo);
+
+		CollectionWithUnknownTypes readPojo = coll.find().first();
+		assertThat(readPojo).isEqualToIgnoringGivenFields(pojo, "map");
+		assertThat(readPojo.getMap()).hasSize(3).containsOnly(
+				Assertions.entry("1", "one"), Assertions.entry("two", 2),
+				Assertions.entry("flag", true));
+
+		assertThat(readPojo.getList()).isInstanceOf(ArrayList.class);
+		assertThat(readPojo.getSet()).isInstanceOf(LinkedHashSet.class);
+		assertThat(readPojo.getMap()).isInstanceOf(LinkedHashMap.class);
+		assertThat(readPojo.getStringObjectMap()).isInstanceOf(LinkedHashMap.class);
+
+		Document doc = db.getCollection("unknown").find().first();
+		assertThat(doc).hasSize(5);
+		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
+		assertThat((List) doc.get("list")).containsExactly(1, "2", 3.3d);
+		assertThat((List) doc.get("set")).containsExactly("1", 2, 3L, true);
+		assertThat((Map) doc.get("map")).containsOnly(Assertions.entry("1", "one"),
+				Assertions.entry("two", 2), Assertions.entry("flag", true));
+		assertThat((Map) doc.get("stringObjectMap")).containsOnly(
+				Assertions.entry("a", true), Assertions.entry("b", 2),
+				Assertions.entry("c", 3.3d), Assertions.entry("d", "string"));
 	}
 }
