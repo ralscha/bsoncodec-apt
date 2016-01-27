@@ -53,4 +53,12 @@ public @interface BsonDocument {
 	 * Default behavior is not storing empty collections and arrays (false)
 	 */
 	boolean storeEmptyCollections() default false;
+
+	/**
+	 * Controls the behavior of the decoder when he encounters fields that cannot be
+	 * mapped to the pojo. true ignores these fields silently. false throw an exception.
+	 * <p>
+	 * Default is ignore unknown fields (true)
+	 */
+	boolean ignoreUnknown() default true;
 }

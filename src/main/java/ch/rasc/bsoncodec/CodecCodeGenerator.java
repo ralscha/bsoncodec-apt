@@ -45,6 +45,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
+import org.bson.BSONException;
 import org.bson.BsonReader;
 import org.bson.BsonType;
 import org.bson.BsonWriter;
@@ -108,6 +109,8 @@ public class CodecCodeGenerator {
 
 	private String providerClassName;
 
+	private boolean ignoreUnknown;
+
 	private final static TypeMirror typeMirrorOfObject = Util.elementUtils
 			.getTypeElement(Object.class.getCanonicalName()).asType();
 
@@ -123,6 +126,8 @@ public class CodecCodeGenerator {
 		else {
 			this.providerClassName = "PojoCodecProvider";
 		}
+
+		this.ignoreUnknown = true;
 	}
 
 	public Set<InstanceField> getInstanceFields() {
@@ -275,7 +280,16 @@ public class CodecCodeGenerator {
 			decode.endControlFlow();
 		}
 
-		decode.addStatement("default:\nreader.skipValue()").endControlFlow();
+		if (this.ignoreUnknown) {
+			decode.addStatement("default:\nreader.skipValue()").endControlFlow();
+		}
+		else {
+			decode.addStatement(
+					"default:\nthrow new $T(this.getClass().getName() + $S + name + $S)",
+					BSONException.class,
+					" does not contain a matching property for the field '", "'")
+					.endControlFlow();
+		}
 
 		if (handleNull) {
 			decode.nextControlFlow("else").addStatement("reader.readNull()");
@@ -336,6 +350,8 @@ public class CodecCodeGenerator {
 			if (!annotationProviderClassName.trim().isEmpty()) {
 				this.providerClassName = annotationProviderClassName;
 			}
+
+			this.ignoreUnknown = bsonDocumentAnnotation.ignoreUnknown();
 		}
 		else {
 			List<? extends AnnotationMirror> allAnnotationMirrors = Util.elementUtils

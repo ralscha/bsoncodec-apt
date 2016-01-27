@@ -61,9 +61,6 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 			generateCodecProvider = Boolean.valueOf(option);
 		}
 
-		// this.processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-		// "Running " + getClass().getSimpleName());
-
 		if (roundEnv.processingOver() || annotations.size() == 0) {
 			return false;
 		}
