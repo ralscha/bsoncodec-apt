@@ -17,9 +17,9 @@ package ch.rasc.bsoncodec.codegen.delegate;
 
 import javax.lang.model.type.TypeMirror;
 
+import org.bson.codecs.BsonTypeClassMap;
 import org.bson.codecs.configuration.CodecRegistry;
 
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 
 import ch.rasc.bsoncodec.codegen.CodeGeneratorContext;
@@ -35,21 +35,25 @@ public class UnknownCodecDelegate implements CodeGeneratorDelegate {
 				.addStatement("encoderContext.encodeWithChildContext(codec, writer, $L)",
 						ctx.getter());
 
-		ctx.builder()
-				.addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
-						.addMember("value", "$S", "unchecked")
-						.addMember("value", "$S", "rawtypes").build());
+		// ctx.builder()
+		// .addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+		// .addMember("value", "$S", "unchecked")
+		// .addMember("value", "$S", "rawtypes").build());
 
 		ctx.instanceFields().add(ImmutableInstanceField.builder()
 				.type(ClassName.get(CodecRegistry.class)).name("registry").build());
+
+		ctx.instanceFields()
+				.add(ImmutableInstanceField.builder()
+						.type(ClassName.get(BsonTypeClassMap.class))
+						.name("bsonTypeClassMap").build());
 
 	}
 
 	@Override
 	public void addDecodeStatements(TypeMirror type, CodeGeneratorContext ctx) {
-		ctx.builder().addStatement(
-				ctx.setter("this.registry.get($L).decode(reader, decoderContext)"),
-				ctx.getter());
+		ctx.builder().addStatement(ctx.setter(
+				"this.registry.get(this.bsonTypeClassMap.get(bsonType)).decode(reader, decoderContext)"));
 	}
 
 	@Override

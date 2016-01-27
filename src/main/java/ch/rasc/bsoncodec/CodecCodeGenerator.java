@@ -108,6 +108,9 @@ public class CodecCodeGenerator {
 
 	private String providerClassName;
 
+	private final static TypeMirror typeMirrorOfObject = Util.elementUtils
+			.getTypeElement(Object.class.getCanonicalName()).asType();
+
 	public CodecCodeGenerator(TypeElement typeElement) {
 		this.typeElement = typeElement;
 		this.packageName = Util.elementUtils.getPackageOf(typeElement).getQualifiedName()
@@ -173,7 +176,8 @@ public class CodecCodeGenerator {
 		MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
 				.addModifiers(Modifier.PUBLIC);
 
-		if (this.instanceFields.stream().filter(InstanceField::isRegistryCodec).findAny()
+		if (this.instanceFields.stream()
+				.filter(i -> i.isRegistryCodec() || i.isRegistry()).findAny()
 				.isPresent()) {
 			constructor.addParameter(ClassName.get(CodecRegistry.class), "registry",
 					Modifier.FINAL);
@@ -187,8 +191,10 @@ public class CodecCodeGenerator {
 						instanceField.codecForClass());
 			}
 			else {
-				constructor.addParameter(instanceField.type(), instanceField.name(),
-						Modifier.FINAL);
+				if (!instanceField.isRegistry()) {
+					constructor.addParameter(instanceField.type(), instanceField.name(),
+							Modifier.FINAL);
+				}
 				constructor.addStatement("this.$N = $T.notNull($S, $N)",
 						instanceField.name(), Assertions.class, instanceField.name(),
 						instanceField.name());
@@ -523,10 +529,7 @@ public class CodecCodeGenerator {
 						collectCodeGen(typeArguments.get(0), cg);
 					}
 					else {
-						ScalarCodeGen.create(cg,
-								Util.elementUtils
-										.getTypeElement(Object.class.getCanonicalName())
-										.asType(),
+						ScalarCodeGen.create(cg, typeMirrorOfObject,
 								new UnknownCodecDelegate());
 					}
 					return cg;
@@ -538,9 +541,23 @@ public class CodecCodeGenerator {
 					if (typeArguments.size() == 2) {
 						MapCodeGen cg = new MapCodeGen(parent, declaredType,
 								typeArguments.get(0));
-						collectCodeGen(typeArguments.get(1), cg);
+
+						TypeMirror entryType = typeArguments.get(1);
+						if (Util.isSameType(entryType, Object.class)) {
+							ScalarCodeGen.create(cg, typeMirrorOfObject,
+									new UnknownCodecDelegate());
+						}
+						else {
+							collectCodeGen(entryType, cg);
+						}
 						return cg;
 					}
+
+					MapCodeGen cg = new MapCodeGen(parent, declaredType,
+							typeMirrorOfObject);
+					ScalarCodeGen.create(cg, typeMirrorOfObject,
+							new UnknownCodecDelegate());
+					return cg;
 
 				}
 				return ScalarCodeGen.create(parent, declaredType);

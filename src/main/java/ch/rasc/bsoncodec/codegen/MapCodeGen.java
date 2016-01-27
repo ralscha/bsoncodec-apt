@@ -85,9 +85,14 @@ public class MapCodeGen extends CompoundCodeGen {
 		TypeMirror childType = this.getChildCodeGen().getType();
 		builder.addStatement("writer.writeStartDocument()");
 
-		builder.beginControlFlow("for (Map.Entry<$T, $T> $L : $L.entrySet())",
-				this.keyType, childType, ctx.getLoopVar(), ctx.getter());
-
+		if (!Util.isSameType(this.keyType, Object.class)) {
+			builder.beginControlFlow("for (Map.Entry<$T, $T> $L : $L.entrySet())",
+					this.keyType, childType, ctx.getLoopVar(), ctx.getter());
+		}
+		else {
+			builder.beginControlFlow("for (Map.Entry $L : (Set<Map.Entry>)$L.entrySet())",
+					ctx.getLoopVar(), ctx.getter());
+		}
 		if (Util.isSameType(this.keyType, String.class)) {
 			builder.addStatement("writer.writeName($L.getKey())", ctx.getLoopVar());
 		}
@@ -155,7 +160,8 @@ public class MapCodeGen extends CompoundCodeGen {
 				"while ((bsonType = reader.readBsonType()) != $T.END_OF_DOCUMENT)",
 				BsonType.class);
 
-		if (Util.isSameType(this.keyType, String.class)) {
+		if (Util.isSameType(this.keyType, String.class)
+				|| Util.isSameType(this.keyType, Object.class)) {
 			builder.addStatement("String $LKey = reader.readName()", lv);
 		}
 		else {
