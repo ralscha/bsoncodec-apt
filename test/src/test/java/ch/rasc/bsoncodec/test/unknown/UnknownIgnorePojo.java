@@ -26,7 +26,7 @@ public class UnknownIgnorePojo {
 	private String name;
 
 	public ObjectId getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(ObjectId id) {
@@ -34,7 +34,7 @@ public class UnknownIgnorePojo {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {

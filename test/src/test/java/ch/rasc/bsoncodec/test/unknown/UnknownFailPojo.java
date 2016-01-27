@@ -21,13 +21,13 @@ import ch.rasc.bsoncodec.annotation.BsonDocument;
 
 @BsonDocument(ignoreUnknown = false)
 public class UnknownFailPojo {
-	
+
 	private ObjectId id;
-	
+
 	private String name;
 
 	public ObjectId getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(ObjectId id) {
@@ -35,13 +35,11 @@ public class UnknownFailPojo {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	
 
 }
