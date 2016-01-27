@@ -28,6 +28,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -47,11 +48,18 @@ import ch.rasc.bsoncodec.model.ImmutableCodecInfo;
 @AutoService(Processor.class)
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedOptions({ "generateCodecProvider" })
 public class CodecAnnotationProcessor extends AbstractProcessor {
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
+
+		String option = this.processingEnv.getOptions().get("generateCodecProvider");
+		boolean generateCodecProvider = true;
+		if (option != null && !option.trim().isEmpty()) {
+			generateCodecProvider = Boolean.valueOf(option);
+		}
 
 		// this.processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
 		// "Running " + getClass().getSimpleName());
@@ -119,21 +127,23 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 		}
 
 		// Create Codec Providers
-		try {
-			for (Map.Entry<String, List<CodecInfo>> providerInfo : codecInfosPerProvider
-					.entrySet()) {
-				ProviderCodeGenerator codeGenerator = new ProviderCodeGenerator(
-						providerInfo.getKey(), providerInfo.getValue());
-				JavaFileObject jfo = this.processingEnv.getFiler()
-						.createSourceFile(codeGenerator.getFullyQualifiedName());
-				try (Writer writer = jfo.openWriter()) {
-					codeGenerator.generate(writer);
+		if (generateCodecProvider) {
+			try {
+				for (Map.Entry<String, List<CodecInfo>> providerInfo : codecInfosPerProvider
+						.entrySet()) {
+					ProviderCodeGenerator codeGenerator = new ProviderCodeGenerator(
+							providerInfo.getKey(), providerInfo.getValue());
+					JavaFileObject jfo = this.processingEnv.getFiler()
+							.createSourceFile(codeGenerator.getFullyQualifiedName());
+					try (Writer writer = jfo.openWriter()) {
+						codeGenerator.generate(writer);
+					}
 				}
 			}
-		}
-		catch (IOException e) {
-			this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-					e.getMessage());
+			catch (IOException e) {
+				this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+						e.getMessage());
+			}
 		}
 
 		return false;
