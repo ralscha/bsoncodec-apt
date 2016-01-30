@@ -144,7 +144,7 @@ Attribute | Description
 codecProviderClassName | Fully qualified classname of the CodecProvider the processor should create. (Default: ```"PojoCodecProvider"```)
 storeNullValues | If false ignores fields that have a null value. If true creates a null entry in the BSON document. (Default: ```false```)
 storeEmptyCollections | If false ignores collections that are empty. If true adds an empty array to the BSON document. (Default: ```false```)
-
+ignoreUnknown | If false throws an exception when the decoder encounters a field in mongodb that does not exists in the pojo. true silently ignores these fields. (Default: ```true```)
 
 #### @Field
 Overrides the custom field handling behavior. This is an optional annotation.
