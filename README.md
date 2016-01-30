@@ -5,7 +5,7 @@ This project implements a Java 8 Annotation Processor (APT) that
 creates [org.bson.codecs.Codec](http://api.mongodb.org/java/3.2/org/bson/codecs/Codec.html) 
 implementations for simple Java objects. 
 
-The annotation processor takes classes like this (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/bsoncodec-apt/src/test/resources/Simple.java))
+The annotation processor takes classes like this (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/Simple.java))
 ```
 @BsonDocument
 public class Simple {
