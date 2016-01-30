@@ -2,7 +2,7 @@
 
 ## Overview
 This project implements a Java 8 Annotation Processor (APT) that
-creates [org.bson.codecs.Codec](http://api.mongodb.org/java/3.1/org/bson/codecs/Codec.html) 
+creates [org.bson.codecs.Codec](http://api.mongodb.org/java/3.2/org/bson/codecs/Codec.html) 
 implementations for simple Java objects. 
 
 The annotation processor takes classes like this (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/bsoncodec-apt/src/test/resources/Simple.java))
@@ -41,7 +41,7 @@ public final class SimpleCodec implements Codec<Simple> {
   }
 }
 ```
-and it creates an additional implementation of the [org.bson.codecs.configuration.CodecProvier](http://api.mongodb.org/java/3.1/org/bson/codecs/configuration/CodecProvider.html) interface (see code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/PojoCodecProvider.java)).
+and it creates an additional implementation of the [org.bson.codecs.configuration.CodecProvier](http://api.mongodb.org/java/3.2/org/bson/codecs/configuration/CodecProvider.html) interface (see code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/PojoCodecProvider.java)).
 
 
 ## Maven
@@ -130,7 +130,7 @@ After this registration the application can use the POJO for storing and reading
 ```
 
 See more informations about Codecs in the official documentation:    
-http://mongodb.github.io/mongo-java-driver/3.1/bson/codecs/
+http://mongodb.github.io/mongo-java-driver/3.2/bson/codecs/
 
 
 ## Annotations
