@@ -15,7 +15,7 @@ public class Simple {
 }
 ```
 
-and generates a corresponding ```Codec<Simple>``` implementation (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/bsoncodec-apt/src/test/resources/SimpleCodec.java))
+and generates a corresponding ```Codec<Simple>``` implementation (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/SimpleCodec.java))
 
 ```
 public final class SimpleCodec implements Codec<Simple> {
@@ -41,7 +41,7 @@ public final class SimpleCodec implements Codec<Simple> {
   }
 }
 ```
-and it creates an additional implementation of the [org.bson.codecs.configuration.CodecProvier](http://api.mongodb.org/java/3.1/org/bson/codecs/configuration/CodecProvider.html) interface (see code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/bsoncodec-apt/src/test/resources/PojoCodecProvider.java)).
+and it creates an additional implementation of the [org.bson.codecs.configuration.CodecProvier](http://api.mongodb.org/java/3.1/org/bson/codecs/configuration/CodecProvider.html) interface (see code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/PojoCodecProvider.java)).
 
 
 ## Maven
