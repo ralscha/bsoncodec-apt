@@ -37,7 +37,9 @@ public class ArrayTest extends AbstractMongoDBTest {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
 				MongoClient.getDefaultCodecRegistry(),
 				CodecRegistries.fromCodecs(new Array1PojoCodec(new ObjectIdGenerator()),
+						new Array1PojoFixedCodec(new ObjectIdGenerator()),
 						new Array2PojoCodec(new ObjectIdGenerator()),
+						new Array2PojoFixedCodec(new ObjectIdGenerator()),
 						new Array3PojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -81,6 +83,38 @@ public class ArrayTest extends AbstractMongoDBTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
+	public void testInsertAndFindPrimitiveFixedArray() {
+		MongoDatabase db = connect();
+
+		MongoCollection<Array1PojoFixed> coll = db.getCollection("array",
+				Array1PojoFixed.class);
+		coll.drop();
+
+		int[] array = new int[2];
+		Integer[] expected = new Integer[2];
+		for (int j = 0; j < 2; j++) {
+			array[j] = j;
+			expected[j] = j;
+		}
+
+		Array1PojoFixed pojo = new Array1PojoFixed();
+		pojo.setArray(array);
+
+		coll.insertOne(pojo);
+
+		Array1PojoFixed readPojo = coll.find().first();
+		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+
+		Document doc = db.getCollection("array").find().first();
+		assertThat(doc).hasSize(2);
+		assertThat(doc.get("_id")).isEqualTo(pojo.get_id());
+		List<Integer> actual = (List<Integer>) doc.get("array");
+		assertThat(actual).hasSize(2);
+		assertThat(actual).containsExactly(expected);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testInsertAndFind() {
 		MongoDatabase db = connect();
 
@@ -109,6 +143,36 @@ public class ArrayTest extends AbstractMongoDBTest {
 			assertThat(actual).hasSize(i);
 			assertThat(actual).containsExactly(array);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testInsertAndFindFixedArray() {
+		MongoDatabase db = connect();
+
+		MongoCollection<Array2PojoFixed> coll = db.getCollection("array",
+				Array2PojoFixed.class);
+		coll.drop();
+
+		Integer[] array = new Integer[2];
+		for (int j = 0; j < 2; j++) {
+			array[j] = j;
+		}
+
+		Array2PojoFixed pojo = new Array2PojoFixed();
+		pojo.setArray(array);
+
+		coll.insertOne(pojo);
+
+		Array2PojoFixed readPojo = coll.find().first();
+		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+
+		Document doc = db.getCollection("array").find().first();
+		assertThat(doc).hasSize(2);
+		assertThat(doc.get("_id")).isEqualTo(pojo.get_id());
+		List<Integer> actual = (List<Integer>) doc.get("array");
+		assertThat(actual).hasSize(2);
+		assertThat(actual).containsExactly(array);
 	}
 
 	@SuppressWarnings("unchecked")

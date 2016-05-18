@@ -218,7 +218,7 @@ public class CodecCodeGenerator {
 						.builder(
 								ParameterizedTypeName.get(ClassName.get(Codec.class),
 										instanceField.codecForClass()),
-						instanceField.name())
+								instanceField.name())
 						.addModifiers(Modifier.PRIVATE, Modifier.FINAL).build();
 			}
 			else {
@@ -486,6 +486,10 @@ public class CodecCodeGenerator {
 			}
 			else {
 				builder.order(index);
+			}
+
+			if (fieldAnnotation.fixedArray() > 0) {
+				builder.fixedArray(fieldAnnotation.fixedArray());
 			}
 
 			TypeName customCodecName = null;

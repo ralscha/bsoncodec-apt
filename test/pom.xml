@@ -8,7 +8,7 @@
 
 	<groupId>ch.rasc</groupId>
 	<artifactId>bsoncodec-test</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<inceptionYear>2015</inceptionYear>
 
@@ -69,7 +69,7 @@
 
 		<dependency>
 			<groupId>ch.rasc</groupId>
-			<artifactId>bsoncodec</artifactId>
+			<artifactId>bsoncodec</artifactId>			
 			<version>1.0.0</version>
 		</dependency>
 
@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>
 			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>1.50.0</version>
+			<version>1.50.5</version>
 			<scope>test</scope>
 		</dependency>
 

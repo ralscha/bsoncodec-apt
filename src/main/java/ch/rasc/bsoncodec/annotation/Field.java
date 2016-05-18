@@ -51,7 +51,7 @@ public @interface Field {
 	 * The order in which the field should be stored.
 	 * <p>
 	 * By default the fields are stored in the order they appear in the class. Except the
-	 * id field is always stored first.
+	 * id field which is always stored first.
 	 */
 	int order() default Integer.MAX_VALUE;
 
@@ -60,6 +60,21 @@ public @interface Field {
 	 * annotated field
 	 */
 	Class<? extends Codec<?>> codec() default NullCodec.class;
+
+	/**
+	 * Denotes an array as a fixed length array. Such an array is null or contains always
+	 * the specified number of elements. This is a micro-optimisation hint for the decoder
+	 * code generation.
+	 * <p>
+	 * This attribute is ignored for non-array fields or for fields that have a custom
+	 * codec codec specified.
+	 * <p>
+	 * i.e. <code>
+	 * &#64;Field(fixedArray=2)
+	 * private double[] lngLat;
+	 * </code>
+	 */
+	int fixedArray() default 0;
 
 	/**
 	 * Specifies the {@link Collection} implementation to be used in the decoding phase.

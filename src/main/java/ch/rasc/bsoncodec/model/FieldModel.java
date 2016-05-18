@@ -63,6 +63,11 @@ public abstract class FieldModel implements Comparable<FieldModel> {
 		return true;
 	}
 
+	@Value.Default
+	public int fixedArray() {
+		return 0;
+	}
+
 	public abstract @Nullable IdModel idModel();
 
 	public abstract String methodNameSet();

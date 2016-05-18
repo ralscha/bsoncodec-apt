@@ -32,7 +32,7 @@ public final class SimpleCodec implements Codec<Simple> {
 
   @Override
   public Simple decode(BsonReader reader, DecoderContext decoderContext) {
-      //.. codec code ...
+      //.. decode code ...
   }
 
   @Override
@@ -52,7 +52,7 @@ To enable the annotation processor you need to add this dependency with scope pr
 	<dependency>
 		<groupId>ch.rasc</groupId>
 		<artifactId>bsoncodec-apt</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2</version>
 		<scope>provided</scope>
 		<!-- or as optional -->
 		<!-- <optional>true</optional> -->
@@ -64,7 +64,7 @@ The generated classes have a compile and runtime dependency on the BSON library.
 	<dependency>
 		<groupId>org.mongodb</groupId>
 		<artifactId>bson</artifactId>
-		<version>3.2.1</version>
+		<version>3.2.2</version>
 	</dependency>
 ```
 
@@ -73,7 +73,7 @@ When the project already depends on the mongodb-driver there is no need to add t
     <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver</artifactId>
-        <version>3.2.1</version>
+        <version>3.2.2</version>
     </dependency>
 ```
 
@@ -157,7 +157,7 @@ value | Name of the key in the BSON document. (Default: Name of the Java field)
 order | Order in which the entry should appear in the BSON document. (Default: In order they are listed in the Java class, except the primary key field which is always ordered first)
 codec | A custom Codec implementation that should be used for this field, instead of the default code.
 collectionImplementationClass | For collections. A hint for the decode phase which Collection implementation should be instantiated.
-
+fixedArray | Denotes an array as a fixed length array. Such an array is null or contains always the specified number of elements. This is a micro-optimisation hint for the decoder code generation.
 
 #### @Id
 Marks a field as the primary key of the document. This is an optional annotation. 
@@ -186,6 +186,9 @@ If this project does not work for you, here a list of other projects that may wo
    * [MongoDB](https://www.mongodb.org/)
 
 ## Changelog
+
+### 1.0.2 - May 18, 2016
+  * Add ```fixedArray``` attribute to the @Field annotation
 
 ### 1.0.1 - January 30, 2016
   * Resolves [#4](https://github.com/ralscha/bsoncodec-apt/issues/4)
