@@ -8,7 +8,7 @@
 
 	<groupId>ch.rasc</groupId>
 	<artifactId>bsoncodec-test</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.3-SNAPSHOT</version>
 
 	<inceptionYear>2015</inceptionYear>
 
@@ -64,7 +64,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
-			<version>3.3.0</version>
+			<version>3.4.0-beta1</version>
 		</dependency>
 
 		<dependency>
@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>de.flapdoodle.embed</groupId>
 			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>1.50.3</version>
+			<version>1.50.5</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -117,7 +117,7 @@
 			<plugin>
 				<groupId>com.mycila</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<version>3.0.rc1</version>
+				<version>3.0</version>
 				<configuration>
 					<header>${basedir}/src/main/config/header.txt</header>
 					<properties>
@@ -148,7 +148,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 
 		</plugins>
 	</build>

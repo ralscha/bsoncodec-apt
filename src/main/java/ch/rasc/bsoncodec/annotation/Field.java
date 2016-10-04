@@ -34,7 +34,7 @@ import org.bson.codecs.EncoderContext;
  * <p>
  * By default the annotation processor takes every instance field into account that is not
  * annotated with {@link Transient} and has a corresponding get and set method. The
- * {@link Field} annotation is only need when the default behavior should be overridden.
+ * {@link Field} annotation is only needed when the default behavior should be overridden.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.SOURCE)
@@ -67,7 +67,7 @@ public @interface Field {
 	 * code generation.
 	 * <p>
 	 * This attribute is ignored for non-array fields or for fields that have a custom
-	 * codec codec specified.
+	 * codec specified.
 	 * <p>
 	 * i.e. <code>
 	 * &#64;Field(fixedArray=2)

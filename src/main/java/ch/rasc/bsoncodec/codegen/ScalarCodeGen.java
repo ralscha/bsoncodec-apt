@@ -26,6 +26,7 @@ import com.squareup.javapoet.MethodSpec.Builder;
 
 import ch.rasc.bsoncodec.codegen.delegate.CodeGeneratorDelegate;
 import ch.rasc.bsoncodec.codegen.delegate.CoreClassesDelegate;
+import ch.rasc.bsoncodec.codegen.delegate.Decimal128Delegate;
 import ch.rasc.bsoncodec.codegen.delegate.DefaultDelegate;
 import ch.rasc.bsoncodec.codegen.delegate.EnumDelegate;
 import ch.rasc.bsoncodec.codegen.delegate.ObjectIdDelegate;
@@ -38,7 +39,8 @@ public class ScalarCodeGen extends CompoundCodeGen {
 
 	private static final List<CodeGeneratorDelegate> delegates = Arrays.asList(
 			new PrimitiveDelegate(), new PrimitiveWrapperDelegate(),
-			new CoreClassesDelegate(), new EnumDelegate(), new ObjectIdDelegate());
+			new CoreClassesDelegate(), new Decimal128Delegate(), new EnumDelegate(),
+			new ObjectIdDelegate());
 
 	public static CodeGeneratorDelegate getDelegate(final TypeMirror type) {
 		return delegates.stream().filter(d -> d.accepts(type)).findFirst()

@@ -35,6 +35,8 @@ import ch.rasc.bsoncodec.test.pojo.CharacterPojo;
 import ch.rasc.bsoncodec.test.pojo.CharacterPojoCodec;
 import ch.rasc.bsoncodec.test.pojo.DatePojo;
 import ch.rasc.bsoncodec.test.pojo.DatePojoCodec;
+import ch.rasc.bsoncodec.test.pojo.Decimal128Pojo;
+import ch.rasc.bsoncodec.test.pojo.Decimal128PojoCodec;
 import ch.rasc.bsoncodec.test.pojo.DoublePojo;
 import ch.rasc.bsoncodec.test.pojo.DoublePojoCodec;
 import ch.rasc.bsoncodec.test.pojo.EnumPojo;
@@ -94,6 +96,8 @@ public class CodecProviderTest {
 				.isInstanceOf(IntegerPojoCodec.class);
 		assertThat(provider.get(YearPojo.class, codecRegistry))
 				.isInstanceOf(YearPojoCodec.class);
+		assertThat(provider.get(Decimal128Pojo.class, codecRegistry))
+				.isInstanceOf(Decimal128PojoCodec.class);		
 		assertThat(provider.get(DoublePojo.class, codecRegistry))
 				.isInstanceOf(DoublePojoCodec.class);
 		assertThat(provider.get(LongPojo.class, codecRegistry))
