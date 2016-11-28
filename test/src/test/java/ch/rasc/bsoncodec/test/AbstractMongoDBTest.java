@@ -47,7 +47,7 @@ public abstract class AbstractMongoDBTest {
 	public void setUp() throws Exception {
 		this._mongodExe = starter.prepare(new MongodConfigBuilder()
 				//.version(Version.Main.PRODUCTION)
-				.version(Versions.withFeatures(new GenericVersion("3.3.15"),Feature.SYNC_DELAY, Feature.STORAGE_ENGINE))
+				.version(Versions.withFeatures(new GenericVersion("3.4.0-rc5"),Feature.SYNC_DELAY, Feature.STORAGE_ENGINE))
 				.net(new Net("127.0.0.1", 12345, Network.localhostIsIPv6())).build());
 		this._mongod = this._mongodExe.start();
 
