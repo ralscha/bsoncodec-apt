@@ -64,19 +64,19 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
-			<version>3.4.0</version>
+			<version>3.4.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>bsoncodec</artifactId>			
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>bsoncodec-apt</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
