@@ -107,13 +107,11 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 							.add(ImmutableCodecInfo.of(typeElement,
 									ClassName.get(codeGen.getPackageName(),
 											codeGen.getClassName()),
-									codeGen.getInstanceFields().stream()
-											.filter(i -> !i.isRegistryCodec()
-													&& !i.isRegistry())
+									codeGen.getInstanceFields().stream().filter(
+											i -> !i.isRegistryCodec() && !i.isRegistry())
 											.sorted().collect(Collectors.toSet()),
-									codeGen.getInstanceFields().stream()
-											.filter(i -> i.isRegistryCodec()
-													|| i.isRegistry())
+									codeGen.getInstanceFields().stream().filter(
+											i -> i.isRegistryCodec() || i.isRegistry())
 											.findFirst().isPresent()));
 				}
 				catch (Exception e) {

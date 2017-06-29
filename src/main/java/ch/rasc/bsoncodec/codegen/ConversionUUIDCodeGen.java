@@ -37,11 +37,11 @@ public class ConversionUUIDCodeGen implements CodeGen {
 		IdModel idModel = field.idModel();
 		Builder builder = ctx.builder();
 
-		if (idModel.generatorName() != null) {
+		if (idModel != null && idModel.generatorName() != null) {
 			builder.addStatement("$T id", UUID.class)
 					.beginControlFlow("if ($L == null)", ctx.getter())
 					.addStatement("id = ($T)this.$N.generate()", UUID.class,
-							field.idModel().generatorName());
+							idModel.generatorName());
 
 			if (idModel.conversion() == IdConversion.HEX_UUID) {
 				builder.addStatement(ctx.setter("id.toString()"));
@@ -69,15 +69,18 @@ public class ConversionUUIDCodeGen implements CodeGen {
 			builder.endControlFlow();
 		}
 		else {
-			if (idModel.conversion() == IdConversion.HEX_UUID) {
-				builder.addStatement("$T id = $T.fromString($L)", UUID.class, UUID.class,
-						ctx.getter());
-			}
-			else if (idModel.conversion() == IdConversion.BASE64_UUID) {
-				builder.addStatement("$T bb = $T.wrap($T.getUrlDecoder().decode($L))",
-						ByteBuffer.class, ByteBuffer.class, Base64.class, ctx.getter());
-				builder.addStatement("$T id = new $T(bb.getLong(), bb.getLong())",
-						UUID.class, UUID.class);
+			if (idModel != null) {
+				if (idModel.conversion() == IdConversion.HEX_UUID) {
+					builder.addStatement("$T id = $T.fromString($L)", UUID.class,
+							UUID.class, ctx.getter());
+				}
+				else if (idModel.conversion() == IdConversion.BASE64_UUID) {
+					builder.addStatement("$T bb = $T.wrap($T.getUrlDecoder().decode($L))",
+							ByteBuffer.class, ByteBuffer.class, Base64.class,
+							ctx.getter());
+					builder.addStatement("$T id = new $T(bb.getLong(), bb.getLong())",
+							UUID.class, UUID.class);
+				}
 			}
 		}
 
@@ -98,17 +101,19 @@ public class ConversionUUIDCodeGen implements CodeGen {
 		builder.addStatement("$T id = this.uUIDCodec.decode(reader, decoderContext)",
 				UUID.class);
 
-		if (idModel.conversion() == IdConversion.HEX_UUID) {
-			builder.addStatement(ctx.setter("id.toString()"));
-		}
-		else if (idModel.conversion() == IdConversion.BASE64_UUID) {
-			builder.addStatement("$T bb = $T.wrap(new byte[16])", ByteBuffer.class,
-					ByteBuffer.class);
-			builder.addStatement("bb.putLong(id.getMostSignificantBits())");
-			builder.addStatement("bb.putLong(id.getLeastSignificantBits())");
-			builder.addStatement(
-					ctx.setter("$T.getUrlEncoder().encodeToString(bb.array())"),
-					Base64.class);
+		if (idModel != null) {
+			if (idModel.conversion() == IdConversion.HEX_UUID) {
+				builder.addStatement(ctx.setter("id.toString()"));
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_UUID) {
+				builder.addStatement("$T bb = $T.wrap(new byte[16])", ByteBuffer.class,
+						ByteBuffer.class);
+				builder.addStatement("bb.putLong(id.getMostSignificantBits())");
+				builder.addStatement("bb.putLong(id.getLeastSignificantBits())");
+				builder.addStatement(
+						ctx.setter("$T.getUrlEncoder().encodeToString(bb.array())"),
+						Base64.class);
+			}
 		}
 	}
 

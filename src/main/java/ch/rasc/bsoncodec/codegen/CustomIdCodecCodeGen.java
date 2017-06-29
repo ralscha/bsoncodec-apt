@@ -16,21 +16,29 @@
 package ch.rasc.bsoncodec.codegen;
 
 import ch.rasc.bsoncodec.model.FieldModel;
+import ch.rasc.bsoncodec.model.IdModel;
 
 public class CustomIdCodecCodeGen implements CodeGen {
 
 	@Override
 	public void addEncodeStatements(CodeGeneratorContext ctx) {
 		FieldModel field = ctx.field();
-		ctx.builder().addStatement("writer.writeName($S)", field.name()).addStatement(
-				"this.$N.encode(writer, $L, encoderContext)", field.idModel().codecName(),
-				ctx.getter());
+		IdModel idModel = field.idModel();
+		if (idModel != null) {
+			ctx.builder().addStatement("writer.writeName($S)", field.name()).addStatement(
+					"this.$N.encode(writer, $L, encoderContext)", idModel.codecName(),
+					ctx.getter());
+		}
 	}
 
 	@Override
 	public void addDecodeStatements(CodeGeneratorContext ctx) {
-		ctx.builder().addStatement(ctx.setter("this.$N.decode(reader, decoderContext)"),
-				ctx.field().idModel().codecName());
+		IdModel idModel = ctx.field().idModel();
+		if (idModel != null) {
+			ctx.builder().addStatement(
+					ctx.setter("this.$N.decode(reader, decoderContext)"),
+					idModel.codecName());
+		}
 	}
 
 }

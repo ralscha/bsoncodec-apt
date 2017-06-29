@@ -31,31 +31,33 @@ public class ConversionObjectIdCodeGen implements CodeGen {
 		IdModel idModel = ctx.field().idModel();
 		Builder builder = ctx.builder();
 
-		builder.addStatement("$T id", ObjectId.class)
-				.beginControlFlow("if ($L == null)", ctx.getter())
-				.addStatement("id = ($T)this.$N.generate()", ObjectId.class,
-						idModel.generatorName());
+		if (idModel != null) {
+			builder.addStatement("$T id", ObjectId.class)
+					.beginControlFlow("if ($L == null)", ctx.getter())
+					.addStatement("id = ($T)this.$N.generate()", ObjectId.class,
+							idModel.generatorName());
 
-		if (idModel.conversion() == IdConversion.HEX_OBJECTID) {
-			builder.addStatement(ctx.setter("id.toHexString()"));
-		}
-		else if (idModel.conversion() == IdConversion.BASE64_OBJECTID) {
-			builder.addStatement(
-					ctx.setter("$T.getUrlEncoder().encodeToString(id.toByteArray())"),
-					Base64.class);
-		}
+			if (idModel.conversion() == IdConversion.HEX_OBJECTID) {
+				builder.addStatement(ctx.setter("id.toHexString()"));
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_OBJECTID) {
+				builder.addStatement(
+						ctx.setter("$T.getUrlEncoder().encodeToString(id.toByteArray())"),
+						Base64.class);
+			}
 
-		builder.nextControlFlow("else");
+			builder.nextControlFlow("else");
 
-		if (idModel.conversion() == IdConversion.HEX_OBJECTID) {
-			builder.addStatement("id = new $T($L)", ObjectId.class, ctx.getter());
+			if (idModel.conversion() == IdConversion.HEX_OBJECTID) {
+				builder.addStatement("id = new $T($L)", ObjectId.class, ctx.getter());
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_OBJECTID) {
+				builder.addStatement("id = new $T($T.getUrlDecoder().decode($L))",
+						ObjectId.class, Base64.class, ctx.getter());
+			}
+			builder.endControlFlow().addStatement("writer.writeObjectId($S, id)",
+					ctx.field().name());
 		}
-		else if (idModel.conversion() == IdConversion.BASE64_OBJECTID) {
-			builder.addStatement("id = new $T($T.getUrlDecoder().decode($L))",
-					ObjectId.class, Base64.class, ctx.getter());
-		}
-		builder.endControlFlow().addStatement("writer.writeObjectId($S, id)",
-				ctx.field().name());
 	}
 
 	@Override
@@ -65,13 +67,15 @@ public class ConversionObjectIdCodeGen implements CodeGen {
 
 		builder.addStatement("$T id = reader.readObjectId()", ObjectId.class);
 
-		if (idModel.conversion() == IdConversion.HEX_OBJECTID) {
-			builder.addStatement(ctx.setter("id.toHexString()"));
-		}
-		else if (idModel.conversion() == IdConversion.BASE64_OBJECTID) {
-			builder.addStatement(
-					ctx.setter("$T.getUrlEncoder().encodeToString(id.toByteArray())"),
-					Base64.class);
+		if (idModel != null) {
+			if (idModel.conversion() == IdConversion.HEX_OBJECTID) {
+				builder.addStatement(ctx.setter("id.toHexString()"));
+			}
+			else if (idModel.conversion() == IdConversion.BASE64_OBJECTID) {
+				builder.addStatement(
+						ctx.setter("$T.getUrlEncoder().encodeToString(id.toByteArray())"),
+						Base64.class);
+			}
 		}
 	}
 
