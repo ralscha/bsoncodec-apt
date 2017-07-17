@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 											codeGen.getClassName()),
 									codeGen.getInstanceFields().stream().filter(
 											i -> !i.isRegistryCodec() && !i.isRegistry())
-											.sorted().collect(Collectors.toSet()),
+											.sorted().collect(Collectors.toCollection(LinkedHashSet::new)),
 									codeGen.getInstanceFields().stream().filter(
 											i -> i.isRegistryCodec() || i.isRegistry())
 											.findFirst().isPresent()));

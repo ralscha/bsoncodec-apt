@@ -145,7 +145,7 @@ public class ProviderCodeGenerator {
 				else {
 					builder.addStatement("return (Codec<T>) new $T(registry, $N)",
 							codec.codecType(),
-							codec.instanceFields().stream().map(i -> i.name())
+							codec.instanceFields().stream().map(i -> "this." + i.name())
 									.collect(Collectors.joining(", ")));
 				}
 			}
@@ -156,7 +156,7 @@ public class ProviderCodeGenerator {
 				else {
 					builder.addStatement("return (Codec<T>) new $T($N)",
 							codec.codecType(),
-							codec.instanceFields().stream().map(i -> i.name())
+							codec.instanceFields().stream().map(i -> "this." + i.name())
 									.collect(Collectors.joining(", ")));
 				}
 			}

@@ -15,7 +15,7 @@
  */
 package ch.rasc.bsoncodec.model;
 
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 import javax.lang.model.element.TypeElement;
 
@@ -33,7 +33,7 @@ public abstract class CodecInfo {
 	public abstract TypeName codecType();
 
 	@Value.Parameter
-	public abstract Set<InstanceField> instanceFields();
+	public abstract LinkedHashSet<InstanceField> instanceFields();
 
 	@Value.Parameter
 	public abstract boolean needRegistryField();

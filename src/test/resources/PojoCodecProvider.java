@@ -36,7 +36,7 @@ public final class PojoCodecProvider implements CodecProvider {
   @SuppressWarnings("unchecked")
   public <T> Codec<T> get(final Class<T> clazz, final CodecRegistry registry) {
     if (clazz.equals(Simple.class)) {
-      return (Codec<T>) new SimpleCodec(objectIdGenerator);
+      return (Codec<T>) new SimpleCodec(this.objectIdGenerator);
     }
     return null;
   }
