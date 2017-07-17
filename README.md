@@ -64,7 +64,7 @@ The generated classes have a compile and runtime dependency on the BSON library.
 	<dependency>
 		<groupId>org.mongodb</groupId>
 		<artifactId>bson</artifactId>
-		<version>3.4.0</version>
+		<version>3.4.2</version>
 	</dependency>
 ```
 
@@ -73,7 +73,7 @@ When the project already depends on the mongodb-driver there is no need to add t
     <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.2</version>
     </dependency>
 ```
 
@@ -186,6 +186,11 @@ If this project does not work for you, here a list of other projects that may wo
    * [MongoDB](https://www.mongodb.org/)
 
 ## Changelog
+
+### 1.0.4 - July 17, 2017
+  * Fix a bug where the order of the codec constructor parameters varies 
+  because the code used a HashSet. This release uses a LinkedHashSet to make the order
+  predictable.
 
 ### 1.0.3 - December 2, 2016
   * Add support for Decimal128 introduced with MongoDB 3.4
