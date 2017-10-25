@@ -133,6 +133,7 @@
 						<exclude>**/.gitignore</exclude>
 						<exclude>.factorypath</exclude>
 						<exclude>mvnw</exclude>
+						<exclude>.editorconfig</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>
