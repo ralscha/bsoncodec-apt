@@ -49,10 +49,17 @@
 	</properties>
 
 	<dependencies>
+	
+		<dependency>
+			<groupId>ch.rasc</groupId>
+			<artifactId>bsoncodec-annotations</artifactId>
+			<version>1.0.5-SNAPSHOT</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>bson</artifactId>
-			<version>3.5.0</version>
+			<version>3.6.0-beta2</version>
 		</dependency>
 
 		<dependency>
@@ -82,7 +89,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>23.3-jre</version>
+			<version>23.4-jre</version>
 		</dependency>
 
 		<!-- TEST dependencies -->
@@ -95,7 +102,7 @@
 		<dependency>
 			<groupId>com.google.testing.compile</groupId>
 			<artifactId>compile-testing</artifactId>
-			<version>0.11</version>
+			<version>0.12</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -105,7 +112,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.2</version>
+				<version>3.7.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -185,11 +192,9 @@
 				<version>3.0</version>
 				<configuration>
 					<header>${basedir}/src/main/config/header.txt</header>
-					<properties>
-						<owner>Ralph Schaer</owner>
+					<properties>						
 						<year>${project.inceptionYear}</year>
 						<currentYear>2017</currentYear>
-						<email>ralphschaer@gmail.com</email>
 					</properties>
 					<excludes>
 						<exclude>**/AnnotationHierarchyUtil.java</exclude>
@@ -201,6 +206,7 @@
 						<exclude>**/.gitignore</exclude>
 						<exclude>.factorypath</exclude>
 						<exclude>mvnw</exclude>
+						<exclude>mvnw.cmd</exclude>
 						<exclude>test/**/*</exclude>
 						<exclude>.apt_generated/</exclude>
 						<exclude>**/maven-wrapper.properties</exclude>
