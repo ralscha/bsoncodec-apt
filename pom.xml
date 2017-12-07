@@ -10,7 +10,7 @@
 
 	<groupId>ch.rasc</groupId>
 	<artifactId>bsoncodec-apt</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.5</version>
 
 	<inceptionYear>2015</inceptionYear>
 
