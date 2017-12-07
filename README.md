@@ -52,7 +52,7 @@ To enable the annotation processor you need to add this dependency with scope pr
 	<dependency>
 		<groupId>ch.rasc</groupId>
 		<artifactId>bsoncodec-apt</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.5</version>
 		<scope>provided</scope>
 		<!-- or as optional -->
 		<!-- <optional>true</optional> -->
@@ -64,7 +64,7 @@ The generated classes have a compile and runtime dependency on the BSON library.
 	<dependency>
 		<groupId>org.mongodb</groupId>
 		<artifactId>bson</artifactId>
-		<version>3.4.2</version>
+		<version>3.6.0</version>
 	</dependency>
 ```
 
@@ -73,7 +73,7 @@ When the project already depends on the mongodb-driver there is no need to add t
     <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver</artifactId>
-        <version>3.4.2</version>
+        <version>3.6.0</version>
     </dependency>
 ```
 
@@ -186,6 +186,9 @@ If this project does not work for you, here a list of other projects that may wo
    * [MongoDB](https://www.mongodb.org/)
 
 ## Changelog
+
+### 1.0.5 - December 7, 2017
+  * Extract annotations into a [separate package](https://github.com/ralscha/bsoncodec-annotations).   
 
 ### 1.0.4 - July 17, 2017
   * Fix a bug where the order of the codec constructor parameters varies 
