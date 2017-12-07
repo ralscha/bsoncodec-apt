@@ -42,8 +42,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-<!-- 
+ 
 	<repositories>
 		<repository>
 			<id>sonatype</id>
@@ -57,7 +56,6 @@
 			</releases>
 		</repository>
 	</repositories>
- -->
  
 	<dependencies>
 		<dependency>
@@ -75,7 +73,7 @@
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>bsoncodec-apt</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.5-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
