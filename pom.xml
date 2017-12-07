@@ -53,13 +53,13 @@
 		<dependency>
 			<groupId>ch.rasc</groupId>
 			<artifactId>bsoncodec-annotations</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
+			<version>1.0.5</version>
 		</dependency>
 	
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>bson</artifactId>
-			<version>3.6.0-rc1</version>
+			<version>3.6.0</version>
 		</dependency>
 
 		<dependency>
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>com.google.testing.compile</groupId>
 			<artifactId>compile-testing</artifactId>
-			<version>0.12</version>
+			<version>0.14</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
