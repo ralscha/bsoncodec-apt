@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
-			<version>3.6.0</version>
+			<version>3.6.1</version>
 		</dependency>
 
 		<dependency>
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>3.8.0</version>
+			<version>3.9.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -121,7 +121,7 @@
 					<properties>
 						
 						<year>${project.inceptionYear}</year>
-						<currentYear>2017</currentYear>
+						<currentYear>2018</currentYear>
 						
 					</properties>
 					<excludes>

@@ -59,19 +59,19 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>bson</artifactId>
-			<version>3.6.0</version>
+			<version>3.6.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.squareup</groupId>
 			<artifactId>javapoet</artifactId>
-			<version>1.9.0</version>
+			<version>1.10.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
-			<version>1.0-rc3</version>
+			<version>1.0-rc4</version>
 		</dependency>
 
 		<dependency>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>23.5-jre</version>
+			<version>23.6-jre</version>
 		</dependency>
 
 		<!-- TEST dependencies -->
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>com.google.testing.compile</groupId>
 			<artifactId>compile-testing</artifactId>
-			<version>0.14</version>
+			<version>0.15</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -174,15 +174,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.6</version>
+				<version>3.7</version>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
+				<version>3.0.0</version>
 				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam>
+					<additionalOptions>-Xdoclint:none</additionalOptions>
 				</configuration>
 			</plugin>
 
@@ -194,7 +194,7 @@
 					<header>${basedir}/src/main/config/header.txt</header>
 					<properties>						
 						<year>${project.inceptionYear}</year>
-						<currentYear>2017</currentYear>
+						<currentYear>2018</currentYear>
 					</properties>
 					<excludes>
 						<exclude>**/AnnotationHierarchyUtil.java</exclude>
