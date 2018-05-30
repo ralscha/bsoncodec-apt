@@ -61,10 +61,10 @@ public class InstantPojoTest extends AbstractMongoDBTest {
 	}
 
 	private MongoDatabase connect() {
-		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(				
 				CodecRegistries.fromProviders(new InstantCodecProvider()),
-				CodecRegistries.fromCodecs(new InstantInt64Codec()));
+				CodecRegistries.fromCodecs(new InstantInt64Codec()),
+				MongoClient.getDefaultCodecRegistry());
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
 				.withCodecRegistry(codecRegistry);
