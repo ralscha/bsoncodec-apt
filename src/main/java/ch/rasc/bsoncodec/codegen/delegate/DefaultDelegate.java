@@ -17,7 +17,7 @@ package ch.rasc.bsoncodec.codegen.delegate;
 
 import javax.lang.model.type.TypeMirror;
 
-import org.omg.IOP.Codec;
+import org.bson.codecs.Codec;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
