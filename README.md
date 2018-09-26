@@ -2,7 +2,7 @@
 
 ## Overview
 This project implements a Java 8 Annotation Processor (APT) that
-creates [org.bson.codecs.Codec](http://api.mongodb.org/java/3.2/org/bson/codecs/Codec.html) 
+creates [org.bson.codecs.Codec](http://mongodb.github.io/mongo-java-driver/3.8/javadoc/org/bson/codecs/Codec.html) 
 implementations for simple Java objects. 
 
 The annotation processor takes classes like this (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/Simple.java))
@@ -46,25 +46,58 @@ and it creates an additional implementation of the [org.bson.codecs.configuratio
 
 ## Maven
 
-To enable the annotation processor you need to add this dependency with scope provided or as optional.
+To enable the annotation processor you need to add the following dependencies.
 
 ```
 	<dependency>
 		<groupId>ch.rasc</groupId>
+		<artifactId>bsoncodec-annotations</artifactId>
+		<version>1.0.6</version>
+	</dependency>
+		
+	<dependency>
+		<groupId>ch.rasc</groupId>
 		<artifactId>bsoncodec-apt</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6</version>
 		<scope>provided</scope>
 		<!-- or as optional -->
 		<!-- <optional>true</optional> -->
 	</dependency>
 ```
 
+Instead of adding the apt processor to the normal dependencies you can add it to the `annotationProcessorPaths` 
+of the compiler plugin. You still need to add the `bsoncodec-annotations` to the normal dependencies.
+```
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.8.0</version>
+		<configuration>
+			<debug>true</debug>
+			<source>${java.version}</source>
+			<target>${java.version}</target>
+			<parameters>true</parameters>
+			<compilerArgs>
+				<compilerArg>-AgenerateCodecProvider=false</compilerArg>
+			</compilerArgs>
+			<annotationProcessorPaths>					
+				<path>
+					<groupId>ch.rasc</groupId>
+					<artifactId>bsoncodec-apt</artifactId>
+					<version>1.0.6</version>
+				</path>
+			</annotationProcessorPaths>					
+		</configuration>
+	</plugin>
+``` 
+
+
 The generated classes have a compile and runtime dependency on the BSON library.
 ```
 	<dependency>
 		<groupId>org.mongodb</groupId>
 		<artifactId>bson</artifactId>
-		<version>3.6.0</version>
+		<version>3.8.2</version>
 	</dependency>
 ```
 
@@ -73,7 +106,7 @@ When the project already depends on the mongodb-driver there is no need to add t
     <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver</artifactId>
-        <version>3.6.0</version>
+        <version>3.8.2</version>
     </dependency>
 ```
 
@@ -130,7 +163,7 @@ After this registration the application can use the POJO for storing and reading
 ```
 
 See more informations about Codecs in the official documentation:    
-http://mongodb.github.io/mongo-java-driver/3.4/bson/codecs/
+http://mongodb.github.io/mongo-java-driver/3.8/bson/codecs/
 
 
 ## Annotations
@@ -186,6 +219,9 @@ If this project does not work for you, here a list of other projects that may wo
    * [MongoDB](https://www.mongodb.org/)
 
 ## Changelog
+
+### 1.0.6 - September 26, 2018
+  * Fix incorrect import statement in the DefaultDelegate class
 
 ### 1.0.5 - December 7, 2017
   * Extract annotations into a [separate package](https://github.com/ralscha/bsoncodec-annotations).   
