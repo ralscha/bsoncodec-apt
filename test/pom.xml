@@ -5,7 +5,7 @@
 
 	<groupId>ch.rasc</groupId>
 	<artifactId>bsoncodec-test</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6</version>
 
 	<inceptionYear>2015</inceptionYear>
 
