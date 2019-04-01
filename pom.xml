@@ -211,6 +211,7 @@
 						<exclude>.apt_generated/</exclude>
 						<exclude>**/maven-wrapper.properties</exclude>
 						<exclude>.editorconfig</exclude>
+						<exclude>.mvn/**/*</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>
