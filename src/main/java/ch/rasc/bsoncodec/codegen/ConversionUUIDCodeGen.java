@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.UUID;
 
-import org.omg.IOP.Codec;
+import org.bson.codecs.Codec;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec.Builder;
