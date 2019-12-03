@@ -15,9 +15,9 @@ jobs:
     - name: Build with Java 1.8
       run: ./mvnw -B clean test --file pom.xml
     - name: Maven Install and Test
-		- run: |
-		     ./mvnw clean install
+    - run: |
+         ./mvnw clean install
          cd test
-				 ../mvnw clean test
+         ../mvnw clean test
     - name: Deploy to Sonatype
       run: ./mvnw -B -Drepo.username=${{secrets.SONATYPE_USERNAME}} -Drepo.password=${{secrets.SONATYPE_PASSWORD}} clean deploy -DskipTests=true --settings mySettings.xml
