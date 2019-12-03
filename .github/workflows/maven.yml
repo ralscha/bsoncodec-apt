@@ -12,8 +12,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Java 1.8
-      run: ./mvnw -B clean test --file pom.xml
     - name: Maven Install and Test
       run: |
          ./mvnw clean install
