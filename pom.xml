@@ -212,6 +212,7 @@
 						<exclude>**/maven-wrapper.properties</exclude>
 						<exclude>.editorconfig</exclude>
 						<exclude>.mvn/**/*</exclude>
+						<exclude>.github/**</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 				</configuration>

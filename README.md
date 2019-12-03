@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/ralscha/bsoncodec-apt.svg?branch=master)](https://travis-ci.org/ralscha/bsoncodec-apt)
+![Test Status](https://github.com/ralscha/bsoncodec-apt/workflows/test/badge.svg)
+
 
 ## Overview
 This project implements a Java 8 Annotation Processor (APT) that
