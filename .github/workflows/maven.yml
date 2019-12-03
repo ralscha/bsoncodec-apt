@@ -15,7 +15,7 @@ jobs:
     - name: Build with Java 1.8
       run: ./mvnw -B clean test --file pom.xml
     - name: Maven Install and Test
-    - run: |
+      run: |
          ./mvnw clean install
          cd test
          ../mvnw clean test
