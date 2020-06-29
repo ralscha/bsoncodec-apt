@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
-			<version>3.12.4</version>
+			<version>3.12.5</version>
 		</dependency>
 
 		<dependency>
