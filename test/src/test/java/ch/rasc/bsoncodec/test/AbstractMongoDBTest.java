@@ -18,16 +18,16 @@ package ch.rasc.bsoncodec.test;
 import org.junit.After;
 import org.junit.Before;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.distribution.Feature;
-import de.flapdoodle.embed.mongo.distribution.Versions;
-import de.flapdoodle.embed.process.distribution.GenericVersion;
+import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 
 public abstract class AbstractMongoDBTest {
@@ -45,21 +45,21 @@ public abstract class AbstractMongoDBTest {
 
 	@Before
 	public void setUp() throws Exception {
-		this._mongodExe = starter.prepare(new MongodConfigBuilder()
-				//.version(Version.Main.PRODUCTION)
-				.version(Versions.withFeatures(new GenericVersion("3.4.0"),Feature.SYNC_DELAY, Feature.STORAGE_ENGINE))
+		this._mongodExe = starter.prepare(MongodConfig.builder()
+				.version(Version.Main.PRODUCTION)
 				.net(new Net("127.0.0.1", 12345, Network.localhostIsIPv6())).build());
 		this._mongod = this._mongodExe.start();
 
-		this._mongo = new MongoClient("localhost", 12345);
+		this._mongo = MongoClients.create("mongodb://localhost:12345");
 
-		//this._mongo = new MongoClient("localhost", 27017);
+		// this._mongo = new MongoClient("localhost", 27017);
 		for (String dbName : this._mongo.listDatabaseNames()) {
-			if (!dbName.equals("admin") && !dbName.equals("local")) { 
-				this._mongo.dropDatabase(dbName);
+			if (!dbName.equals("admin") && !dbName.equals("local")) {
+				MongoDatabase database = this._mongo.getDatabase(dbName);
+				database.drop();
 			}
 		}
-	}	
+	}
 
 	@After
 	public void tearDown() throws Exception {

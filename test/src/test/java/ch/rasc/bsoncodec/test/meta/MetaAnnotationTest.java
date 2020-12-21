@@ -21,7 +21,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -33,7 +33,7 @@ public class MetaAnnotationTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(new PojoCodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -53,7 +53,7 @@ public class MetaAnnotationTest extends AbstractMongoDBTest {
 		coll.insertOne(mp);
 
 		MetaPojo readMp = coll.find().first();
-		assertThat(mp).isEqualToComparingFieldByField(readMp);
+		assertThat(mp).usingRecursiveComparison().isEqualTo(readMp);
 	}
 
 }

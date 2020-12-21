@@ -22,12 +22,15 @@ import java.util.Base64;
 import java.util.UUID;
 
 import org.bson.Document;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -37,7 +40,10 @@ public class IdTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(), CodecRegistries.fromProviders(
+				CodecRegistries.fromProviders(
+						new UuidCodecProvider(UuidRepresentation.STANDARD)),
+				MongoClientSettings.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(
 						new ch.rasc.bsoncodec.test.id.PojoCodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("id")
@@ -58,7 +64,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		CustomIdCodecPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("CustomIdCodecPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -79,7 +85,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		Integer_IdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("Integer_IdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -100,7 +106,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		IntegerIdOtherNamePojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("IntegerIdOtherNamePojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -121,7 +127,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		IntegerIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("IntegerIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -143,7 +149,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		ObjectIdOtherNamePojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("ObjectIdOtherNamePojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -165,7 +171,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		ObjectIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("ObjectIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -187,7 +193,7 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(pojo.getB64()).isNotNull();
 
 		StringBase64ToObjectIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringBase64ToObjectIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -210,7 +216,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringBase64ToObjectIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringBase64ToObjectIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -232,7 +238,7 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(pojo.getHex()).isNotNull();
 
 		StringHexToObjectIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringHexToObjectIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -254,7 +260,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringHexToObjectIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringHexToObjectIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -275,7 +281,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringIdOtherNamePojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringIdOtherNamePojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -297,7 +303,7 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(pojo.getId()).isNotNull();
 
 		StringIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -318,7 +324,7 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringIdPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringIdPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -340,12 +346,22 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(pojo.getUuid()).isNotNull();
 
 		StringHexToUuidPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringHexToUuidPojo").find().first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(UUID.fromString(pojo.getUuid()));
+
+		assertThat(binaryToUUID((Binary) doc.get("_id")))
+				.isEqualTo(UUID.fromString(pojo.getUuid()));
 		assertThat(doc.get("data")).isEqualTo(7);
+	}
+
+	private static UUID binaryToUUID(Binary id) {
+		ByteBuffer bb = ByteBuffer.wrap(id.getData());
+		long high = bb.getLong();
+		long low = bb.getLong();
+		UUID uuid = new UUID(high, low);
+		return uuid;
 	}
 
 	@Test
@@ -362,11 +378,11 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringHexToUuidPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringHexToUuidPojo").find().first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(8);
 	}
 
@@ -384,11 +400,11 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringHexToUuidWoGeneratorPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringHexToUuidWoGeneratorPojo").find().first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(9);
 	}
 
@@ -406,14 +422,14 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(pojo.getUuid()).isNotNull();
 
 		StringBase64ToUuidPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringBase64ToUuidPojo").find().first();
 		assertThat(doc).hasSize(2);
 
 		ByteBuffer bb = ByteBuffer.wrap(Base64.getUrlDecoder().decode(pojo.getUuid()));
 		UUID id = new UUID(bb.getLong(), bb.getLong());
-		assertThat(doc.get("_id")).isEqualTo(id);
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(id);
 		assertThat(doc.get("data")).isEqualTo(7);
 	}
 
@@ -435,11 +451,11 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringBase64ToUuidPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringBase64ToUuidPojo").find().first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(8);
 	}
 
@@ -462,12 +478,12 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StringBase64ToUuidWoGeneratorPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StringBase64ToUuidWoGeneratorPojo").find()
 				.first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(9);
 	}
 
@@ -498,11 +514,11 @@ public class IdTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		UuidOtherNamePojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("UuidOtherNamePojo").find().first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(uuid);
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(uuid);
 		assertThat(doc.get("data")).isEqualTo(22);
 	}
 
@@ -519,11 +535,11 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(pojo.getId()).isNotNull();
 
 		UuidPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("UuidPojo").find().first();
 		assertThat(doc).hasSize(2);
-		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
+		assertThat(binaryToUUID((Binary) doc.get("_id"))).isEqualTo(pojo.getId());
 		assertThat(doc.get("data")).isEqualTo(44);
 	}
 }

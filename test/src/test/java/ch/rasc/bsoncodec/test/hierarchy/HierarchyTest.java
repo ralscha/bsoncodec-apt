@@ -23,7 +23,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -33,7 +33,7 @@ public class HierarchyTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromCodecs(new UserCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -53,7 +53,8 @@ public class HierarchyTest extends AbstractMongoDBTest {
 		coll.insertOne(user);
 
 		User readUser = coll.find().first();
-		assertThat(readUser).isEqualToComparingFieldByField(user);
+		assertThat(readUser).usingRecursiveComparison()
+        .isEqualTo(user);
 
 		Document doc = db.getCollection("users").find().first();
 		assertThat(doc).hasSize(3);

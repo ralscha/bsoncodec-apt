@@ -31,7 +31,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -45,7 +45,7 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries
-				.fromRegistries(MongoClient.getDefaultCodecRegistry(), CodecRegistries
+				.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries
 						.fromCodecs(new BooleanPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -96,7 +96,7 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 		MongoCollection<BooleanPojo> coll = db.getCollection(COLL_NAME,
 				BooleanPojo.class);
 		BooleanPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 
 		BooleanPojo empty = coll.find().projection(Projections.include("id")).first();
 		assertThat(empty.getScalarPrimitive()).isEqualTo(false);
@@ -118,7 +118,7 @@ public class BooleanPojoTest extends AbstractMongoDBTest {
 		MongoCollection<BooleanPojo> coll = db.getCollection(COLL_NAME,
 				BooleanPojo.class);
 		BooleanPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")

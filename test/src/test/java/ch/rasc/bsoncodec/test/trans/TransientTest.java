@@ -26,7 +26,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -38,7 +38,7 @@ public class TransientTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries
-				.fromRegistries(MongoClient.getDefaultCodecRegistry(), CodecRegistries
+				.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries
 						.fromCodecs(new TransientPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -60,7 +60,8 @@ public class TransientTest extends AbstractMongoDBTest {
 		coll.insertOne(tp);
 
 		TransientPojo readTp = coll.find().first();
-		assertThat(readTp).isEqualToIgnoringGivenFields(tp, "secret");
+		assertThat(readTp).usingRecursiveComparison().
+		ignoringFields("secret").isEqualTo(tp);
 		assertThat(readTp.getSecret()).isNull();
 
 		Document doc = db.getCollection(COLL_NAME).find().first();

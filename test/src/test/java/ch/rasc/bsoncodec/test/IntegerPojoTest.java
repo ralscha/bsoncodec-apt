@@ -31,7 +31,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -45,7 +45,7 @@ public class IntegerPojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries
-				.fromRegistries(MongoClient.getDefaultCodecRegistry(), CodecRegistries
+				.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries
 						.fromCodecs(new IntegerPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -97,7 +97,7 @@ public class IntegerPojoTest extends AbstractMongoDBTest {
 		MongoCollection<IntegerPojo> coll = db.getCollection(COLL_NAME,
 				IntegerPojo.class);
 		IntegerPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 
 		IntegerPojo empty = coll.find().projection(Projections.include("id")).first();
 		assertThat(empty.getScalarPrimitive()).isEqualTo(0);
@@ -119,7 +119,7 @@ public class IntegerPojoTest extends AbstractMongoDBTest {
 		MongoCollection<IntegerPojo> coll = db.getCollection(COLL_NAME,
 				IntegerPojo.class);
 		IntegerPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")

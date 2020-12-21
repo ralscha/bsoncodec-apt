@@ -97,7 +97,7 @@ public class CodecProviderTest {
 		assertThat(provider.get(YearPojo.class, codecRegistry))
 				.isInstanceOf(YearPojoCodec.class);
 		assertThat(provider.get(Decimal128Pojo.class, codecRegistry))
-				.isInstanceOf(Decimal128PojoCodec.class);		
+				.isInstanceOf(Decimal128PojoCodec.class);
 		assertThat(provider.get(DoublePojo.class, codecRegistry))
 				.isInstanceOf(DoublePojoCodec.class);
 		assertThat(provider.get(LongPojo.class, codecRegistry))

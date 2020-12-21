@@ -29,7 +29,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -39,7 +39,7 @@ public class EmptyAndNullTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(), CodecRegistries.fromProviders(
+				MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(
 						new ch.rasc.bsoncodec.test.empty.PojoCodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -63,7 +63,8 @@ public class EmptyAndNullTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StoreNullPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison()
+		                     .isEqualTo(pojo);
 
 		Document doc = db.getCollection("StoreNullPojo").find().first();
 		assertThat(doc).hasSize(6);
@@ -96,7 +97,8 @@ public class EmptyAndNullTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StoreEmptyPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison()
+        .isEqualTo(pojo);
 
 		Document doc = db.getCollection("StoreEmptyPojo").find().first();
 		assertThat(doc).hasSize(6);
@@ -130,7 +132,7 @@ public class EmptyAndNullTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		StoreEmptyAndNullPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("StoreEmptyAndNullPojo").find().first();
 		assertThat(doc).hasSize(9);
@@ -163,7 +165,7 @@ public class EmptyAndNullTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		NullValueStoreNull readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("NullValueStoreNull").find().first();
 		assertThat(doc).hasSize(3);
@@ -192,7 +194,8 @@ public class EmptyAndNullTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		NullValueDoNotStoreNull readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToIgnoringGivenFields(pojo, "list");
+		assertThat(readPojo).usingRecursiveComparison().
+		ignoringFields("list").isEqualTo(pojo);
 		assertThat(readPojo.getList()).containsExactly("one", "two", null, "three",
 				"four");
 		Document doc = db.getCollection("NullValueDoNotStoreNull").find().first();

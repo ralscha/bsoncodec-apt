@@ -38,7 +38,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -48,7 +48,7 @@ public class CollectionTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(new PojoCodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -117,8 +117,9 @@ public class CollectionTest extends AbstractMongoDBTest {
 		assertThat(readPojo.getQueue()).isInstanceOf(LinkedBlockingQueue.class);
 		assertThat(readPojo.getTransferQueue()).isInstanceOf(LinkedTransferQueue.class);
 
-		assertThat(readPojo).isEqualToComparingOnlyGivenFields(pojo, "id", "collection",
-				"list", "set", "sortedSet", "navigableSet");
+		assertThat(readPojo).usingRecursiveComparison().
+		ignoringFields("id", "collection",
+				"list", "set", "sortedSet", "navigableSet").isEqualTo(pojo);
 
 		assertThat(readPojo.getBlockingDeque()).containsExactly("six");
 		assertThat(readPojo.getBlockingQueue()).containsExactly("seven");
@@ -168,7 +169,7 @@ public class CollectionTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		CollectionWithImplPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		assertThat(readPojo.getList1()).isInstanceOf(ArrayList.class);
 		assertThat(readPojo.getList2()).isInstanceOf(ArrayList.class);
@@ -220,7 +221,10 @@ public class CollectionTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		CollectionWithUnknownTypes readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToIgnoringGivenFields(pojo, "map");
+
+		assertThat(readPojo).usingRecursiveComparison().
+		ignoringFields("map").isEqualTo(pojo);
+
 		assertThat(readPojo.getMap()).hasSize(3).containsOnly(
 				Assertions.entry("1", "one"), Assertions.entry("two", 2),
 				Assertions.entry("flag", true));

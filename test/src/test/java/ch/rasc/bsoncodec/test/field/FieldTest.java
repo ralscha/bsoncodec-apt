@@ -26,7 +26,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -36,7 +36,7 @@ public class FieldTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(new PojoCodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -58,7 +58,8 @@ public class FieldTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		CustomCodecPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison()
+        .isEqualTo(pojo);
 
 		Document doc = db.getCollection("CustomCodecPojo").find().first();
 		assertThat(doc).hasSize(2);
@@ -81,7 +82,8 @@ public class FieldTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		DifferentFieldNamePojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison()
+        .isEqualTo(pojo);
 
 		Document doc = db.getCollection("DifferentFieldNamePojo").find().first();
 		assertThat(doc).hasSize(4);
@@ -105,7 +107,8 @@ public class FieldTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		OrderAscPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison()
+        .isEqualTo(pojo);
 
 		Document doc = db.getCollection("OrderAscPojo").find().first();
 		assertThat(doc).hasSize(4);
@@ -136,7 +139,8 @@ public class FieldTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		OrderDescPojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison()
+        .isEqualTo(pojo);
 
 		Document doc = db.getCollection("OrderDescPojo").find().first();
 		assertThat(doc).hasSize(4);

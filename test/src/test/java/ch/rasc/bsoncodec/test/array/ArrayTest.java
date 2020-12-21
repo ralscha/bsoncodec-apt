@@ -25,7 +25,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -35,7 +35,7 @@ public class ArrayTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromCodecs(new Array1PojoCodec(new ObjectIdGenerator()),
 						new Array1PojoFixedCodec(new ObjectIdGenerator()),
 						new Array2PojoCodec(new ObjectIdGenerator()),
@@ -70,7 +70,7 @@ public class ArrayTest extends AbstractMongoDBTest {
 			coll.insertOne(pojo);
 
 			Array1Pojo readPojo = coll.find().first();
-			assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+			assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 			Document doc = db.getCollection("array").find().first();
 			assertThat(doc).hasSize(2);
@@ -103,7 +103,7 @@ public class ArrayTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		Array1PojoFixed readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("array").find().first();
 		assertThat(doc).hasSize(2);
@@ -134,7 +134,7 @@ public class ArrayTest extends AbstractMongoDBTest {
 			coll.insertOne(pojo);
 
 			Array2Pojo readPojo = coll.find().first();
-			assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+			assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 			Document doc = db.getCollection("array").find().first();
 			assertThat(doc).hasSize(2);
@@ -165,7 +165,7 @@ public class ArrayTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		Array2PojoFixed readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("array").find().first();
 		assertThat(doc).hasSize(2);
@@ -198,7 +198,7 @@ public class ArrayTest extends AbstractMongoDBTest {
 			coll.insertOne(pojo);
 
 			Array3Pojo readPojo = coll.find().first();
-			assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+			assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 			Document doc = db.getCollection("array").find().first();
 			System.out.println(doc);

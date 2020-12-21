@@ -24,7 +24,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -39,7 +39,7 @@ public class UnknownTest extends AbstractMongoDBTest {
 	private MongoDatabase connect() {
 		ObjectIdGenerator objectIdGenerator = new ObjectIdGenerator();
 		CodecRegistry codecRegistry = CodecRegistries
-				.fromRegistries(MongoClient.getDefaultCodecRegistry(),
+				.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
 						CodecRegistries.fromCodecs(
 								new UnknownIgnorePojoCodec(objectIdGenerator),
 								new UnknownFailPojoCodec(objectIdGenerator)));
@@ -64,7 +64,7 @@ public class UnknownTest extends AbstractMongoDBTest {
 				Updates.set("newField", "new"));
 
 		UnknownIgnorePojo readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection(COLL_NAME).find().first();
 		assertThat(doc).hasSize(3);

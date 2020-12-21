@@ -30,7 +30,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -40,7 +40,7 @@ public class EmbeddedTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(), CodecRegistries.fromProviders(
+				MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(
 						new ch.rasc.bsoncodec.test.embedded.PojoCodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -90,7 +90,7 @@ public class EmbeddedTest extends AbstractMongoDBTest {
 		coll.insertOne(pojo);
 
 		Order readPojo = coll.find().first();
-		assertThat(readPojo).isEqualToComparingFieldByField(pojo);
+		assertThat(readPojo).usingRecursiveComparison().isEqualTo(pojo);
 
 		Document doc = db.getCollection("Order").find().first();
 		assertThat(doc).hasSize(5);

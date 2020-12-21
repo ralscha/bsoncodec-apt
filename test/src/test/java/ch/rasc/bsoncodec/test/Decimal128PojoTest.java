@@ -34,7 +34,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.Decimal128;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -59,7 +59,7 @@ public class Decimal128PojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(new Decimal128CodecProvider()));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -109,7 +109,7 @@ public class Decimal128PojoTest extends AbstractMongoDBTest {
 		MongoCollection<Decimal128Pojo> coll = db.getCollection(COLL_NAME,
 				Decimal128Pojo.class);
 		Decimal128Pojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 
 		Decimal128Pojo empty = coll.find().projection(Projections.include("id")).first();
 		assertThat(empty.getScalar()).isNull();
@@ -128,7 +128,7 @@ public class Decimal128PojoTest extends AbstractMongoDBTest {
 		MongoCollection<Decimal128Pojo> coll = db.getCollection(COLL_NAME,
 				Decimal128Pojo.class);
 		Decimal128Pojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -34,7 +34,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -60,7 +60,7 @@ public class YearPojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(new YearCodecProvider()),
 				CodecRegistries.fromCodecs(new YearInt32Codec()));
 
@@ -107,7 +107,7 @@ public class YearPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<YearPojo> coll = db.getCollection(COLL_NAME, YearPojo.class);
 		YearPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 
 		YearPojo empty = coll.find().projection(Projections.include("id")).first();
 		assertThat(empty.getScalar()).isNull();
@@ -125,7 +125,7 @@ public class YearPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<YearPojo> coll = db.getCollection(COLL_NAME, YearPojo.class);
 		YearPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -34,7 +34,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -60,7 +60,7 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromCodecs(new MonthInt32Codec()),
 				CodecRegistries.fromProviders(new MonthCodecProvider()));
 
@@ -106,7 +106,7 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<MonthPojo> coll = db.getCollection(COLL_NAME, MonthPojo.class);
 		MonthPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 
 		MonthPojo empty = coll.find().projection(Projections.include("id")).first();
 		assertThat(empty.getScalar()).isNull();
@@ -124,7 +124,7 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<MonthPojo> coll = db.getCollection(COLL_NAME, MonthPojo.class);
 		MonthPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")

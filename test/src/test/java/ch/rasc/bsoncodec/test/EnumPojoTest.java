@@ -33,7 +33,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -48,7 +48,7 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(
-				MongoClient.getDefaultCodecRegistry(),
+				MongoClientSettings.getDefaultCodecRegistry(),
 				CodecRegistries.fromCodecs(new EnumPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -104,7 +104,8 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 		MongoCollection<EnumPojo> coll = db.getCollection(COLL_NAME, EnumPojo.class);
 		EnumPojo read = coll.find().first();
 
-		assertThat(read).isEqualToIgnoringGivenFields(pojo, "enumSet3");
+		assertThat(read).usingRecursiveComparison().
+		ignoringFields("enumSet3").isEqualTo(pojo);
 		assertThat(read.getEnumSet3()).isNull();
 
 		EnumPojo empty = coll.find().projection(Projections.include("id")).first();
@@ -127,7 +128,7 @@ public class EnumPojoTest extends AbstractMongoDBTest {
 
 		MongoCollection<EnumPojo> coll = db.getCollection(COLL_NAME, EnumPojo.class);
 		EnumPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")

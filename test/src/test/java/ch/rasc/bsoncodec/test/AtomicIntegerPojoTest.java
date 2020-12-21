@@ -32,7 +32,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.junit.Test;
 
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
@@ -46,7 +46,7 @@ public class AtomicIntegerPojoTest extends AbstractMongoDBTest {
 
 	private MongoDatabase connect() {
 		CodecRegistry codecRegistry = CodecRegistries
-				.fromRegistries(MongoClient.getDefaultCodecRegistry(), CodecRegistries
+				.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries
 						.fromCodecs(new AtomicIntegerPojoCodec(new ObjectIdGenerator())));
 
 		MongoDatabase db = getMongoClient().getDatabase("pojo")
@@ -101,7 +101,7 @@ public class AtomicIntegerPojoTest extends AbstractMongoDBTest {
 		assertThat(read.getArray()[0].get()).isEqualTo(2);
 		assertThat(read.getArray()[1].get()).isEqualTo(3);
 
-		assertThat(read.getArray2()).hasSize(2);
+		assertThat(read.getArray2()).hasDimensions(2,1);
 		assertThat(read.getArray2()[0][0].get()).isEqualTo(4);
 		assertThat(read.getArray2()[1][0].get()).isEqualTo(5);
 
@@ -128,7 +128,7 @@ public class AtomicIntegerPojoTest extends AbstractMongoDBTest {
 		MongoCollection<AtomicIntegerPojo> coll = db.getCollection(COLL_NAME,
 				AtomicIntegerPojo.class);
 		AtomicIntegerPojo read = coll.find().first();
-		assertThat(read).isEqualToComparingFieldByField(pojo);
+		assertThat(read).usingRecursiveComparison().isEqualTo(pojo);
 	}
 
 	@SuppressWarnings("unchecked")
