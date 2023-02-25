@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>bson</artifactId>
-			<version>4.8.2</version>
+			<version>4.9.0</version>
 		</dependency>
 
 		<dependency>
@@ -78,12 +78,6 @@
 			<groupId>org.immutables</groupId>
 			<artifactId>value</artifactId>
 			<version>2.9.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<version>3.0.2</version>
 		</dependency>
 
 		<dependency>
