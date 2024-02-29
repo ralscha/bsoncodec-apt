@@ -137,16 +137,16 @@ public class MonthPojoTest extends AbstractMongoDBTest {
 		Document doc = coll.find().first();
 		assertThat(doc).hasSize(7);
 		assertThat(doc.get("_id")).isEqualTo(pojo.getId());
-		assertThat(doc.get("scalar")).isEqualTo(1);
-		assertThat((List<Integer>) doc.get("array")).containsExactly(2, 3, 4);
-		assertThat((List<List<Integer>>) doc.get("array2"))
-				.containsExactly(Arrays.asList(5), Arrays.asList(6, 7));
-		assertThat((List<Integer>) doc.get("list")).containsExactly(8, 9);
-		assertThat((List<Integer>) doc.get("set")).containsExactly(12);
+		assertThat(doc.get("scalar")).isEqualTo("JANUARY");
+		assertThat((List<String>) doc.get("array")).containsExactly("FEBRUARY", "MARCH", "APRIL");
+		assertThat((List<List<String>>) doc.get("array2"))
+				.containsExactly(Arrays.asList("MAY"), Arrays.asList("JUNE", "JULY"));
+		assertThat((List<String>) doc.get("list")).containsExactly("AUGUST", "SEPTEMBER");
+		assertThat((List<String>) doc.get("set")).containsExactly("DECEMBER");
 
-		assertThat((Map<String, Integer>) doc.get("map")).containsOnly(
-				MapEntry.entry("one", 1), MapEntry.entry("two", 2),
-				MapEntry.entry("three", 3), MapEntry.entry("null", null));
+		assertThat((Map<String, String>) doc.get("map")).containsOnly(
+				MapEntry.entry("one", "JANUARY"), MapEntry.entry("two", "FEBRUARY"),
+				MapEntry.entry("three", "MARCH"), MapEntry.entry("null", null));
 	}
 
 	@Test
