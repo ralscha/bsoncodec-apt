@@ -19,14 +19,4 @@ jobs:
       run: |
          ./mvnw clean install
          cd test
-         ../mvnw clean test	
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v5
-    - name: Set up Java 11
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'temurin'	  	  
-        java-version: 11	
+         ../mvnw clean test

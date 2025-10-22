@@ -15,10 +15,10 @@
  */
 package ch.rasc.bsoncodec.model;
 
-import javax.annotation.Nullable;
 import javax.lang.model.element.VariableElement;
 
 import org.immutables.value.Value;
+import org.jspecify.annotations.Nullable;
 
 import ch.rasc.bsoncodec.codegen.CodeGen;
 

@@ -15,9 +15,8 @@
  */
 package ch.rasc.bsoncodec.model;
 
-import javax.annotation.Nullable;
-
 import org.immutables.value.Value;
+import org.jspecify.annotations.Nullable;
 
 import ch.rasc.bsoncodec.annotation.Id.IdConversion;
 
