@@ -15,6 +15,7 @@
  */
 package ch.rasc.bsoncodec.codegen;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -195,8 +196,8 @@ public class CollectionCodeGen extends CompoundCodeGen {
 		addToDefaultCollImpl(NavigableSet.class, TreeSet.class);
 		addToDefaultCollImpl(BlockingDeque.class, LinkedBlockingDeque.class);
 		addToDefaultCollImpl(BlockingQueue.class, LinkedBlockingQueue.class);
-		addToDefaultCollImpl(Deque.class, LinkedBlockingDeque.class);
-		addToDefaultCollImpl(Queue.class, LinkedBlockingQueue.class);
+		addToDefaultCollImpl(Deque.class, ArrayDeque.class);
+		addToDefaultCollImpl(Queue.class, LinkedList.class);
 		addToDefaultCollImpl(TransferQueue.class, LinkedTransferQueue.class);
 
 		permitNullCollections.addAll(Arrays.asList(ArrayList.class.getCanonicalName(),

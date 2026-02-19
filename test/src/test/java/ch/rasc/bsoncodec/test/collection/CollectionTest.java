@@ -17,6 +17,7 @@ package ch.rasc.bsoncodec.test.collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -113,8 +114,8 @@ public class CollectionTest extends AbstractMongoDBTest {
 		assertThat(readPojo.getNavigableSet()).isInstanceOf(TreeSet.class);
 		assertThat(readPojo.getBlockingDeque()).isInstanceOf(LinkedBlockingDeque.class);
 		assertThat(readPojo.getBlockingQueue()).isInstanceOf(LinkedBlockingQueue.class);
-		assertThat(readPojo.getDeque()).isInstanceOf(LinkedBlockingDeque.class);
-		assertThat(readPojo.getQueue()).isInstanceOf(LinkedBlockingQueue.class);
+		assertThat(readPojo.getDeque()).isInstanceOf(ArrayDeque.class);
+		assertThat(readPojo.getQueue()).isInstanceOf(LinkedList.class);
 		assertThat(readPojo.getTransferQueue()).isInstanceOf(LinkedTransferQueue.class);
 
 		assertThat(readPojo).usingRecursiveComparison().

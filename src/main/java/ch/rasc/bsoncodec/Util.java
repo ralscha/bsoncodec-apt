@@ -65,6 +65,9 @@ public class Util {
 	}
 
 	public static String uncapitalize(String string) {
+		if (string == null || string.isEmpty()) {
+			return string;
+		}
 		char c[] = string.toCharArray();
 		c[0] = Character.toLowerCase(c[0]);
 		return new String(c);

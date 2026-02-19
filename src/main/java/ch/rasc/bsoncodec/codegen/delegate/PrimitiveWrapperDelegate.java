@@ -84,7 +84,7 @@ public class PrimitiveWrapperDelegate implements CodeGeneratorDelegate {
 			builder.addStatement("String string = reader.readString()");
 			builder.beginControlFlow("if (string.length() != 1)");
 			builder.addStatement(
-					"throw new $T(String.format(\"Attempting to builder the string '%s' to a character, but its length is not equal to one\", string))",
+					"throw new $T(String.format(\"Attempting to convert the string '%s' to a character, but its length is not equal to one\", string))",
 					BsonInvalidOperationException.class);
 			builder.endControlFlow();
 			builder.addStatement(ctx.setter("$T.valueOf(string.charAt(0))"),

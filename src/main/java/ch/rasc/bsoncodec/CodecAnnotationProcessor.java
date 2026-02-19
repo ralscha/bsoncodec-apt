@@ -111,13 +111,13 @@ public class CodecAnnotationProcessor extends AbstractProcessor {
 									codeGen.getInstanceFields().stream().filter(
 											i -> !i.isRegistryCodec() && !i.isRegistry())
 											.sorted().collect(Collectors.toCollection(LinkedHashSet::new)),
-									codeGen.getInstanceFields().stream().filter(
-											i -> i.isRegistryCodec() || i.isRegistry())
-											.findFirst().isPresent()));
+								codeGen.getInstanceFields().stream().anyMatch(
+										i -> i.isRegistryCodec() || i.isRegistry())));
 				}
 				catch (Exception e) {
+					String message = e.getMessage();
 					this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
-							e.getMessage());
+							message != null ? message : e.toString());
 				}
 			}
 		}

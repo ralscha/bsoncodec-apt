@@ -326,10 +326,10 @@ public class CodecCodeGenerator {
 
 	private boolean filterEnclosedElements(Element el) {
 		return !el.getModifiers().contains(Modifier.STATIC)
-				&& el.getKind() == ElementKind.METHOD
-				&& !el.getModifiers().contains(Modifier.PRIVATE)
-				|| el.getKind() == ElementKind.FIELD
-						&& el.getAnnotation(Transient.class) == null;
+				&& ((el.getKind() == ElementKind.METHOD
+						&& !el.getModifiers().contains(Modifier.PRIVATE))
+						|| (el.getKind() == ElementKind.FIELD
+								&& el.getAnnotation(Transient.class) == null));
 	}
 
 	private List<FieldModel> collectFields() {
@@ -401,7 +401,7 @@ public class CodecCodeGenerator {
 
 			Map<String, String> getMethods = new HashMap<>();
 			Map<String, String> setMethods = new HashMap<>();
-			for (Element el : enclosedElements.get(ElementKind.METHOD)) {
+			for (Element el : enclosedElements.getOrDefault(ElementKind.METHOD, Collections.emptyList())) {
 				ExecutableElement method = (ExecutableElement) el;
 				String methodName = method.getSimpleName().toString();
 				List<? extends VariableElement> params = method.getParameters();
@@ -425,10 +425,11 @@ public class CodecCodeGenerator {
 				}
 			}
 
-			Element idElement = lookupId(enclosedElements.get(ElementKind.FIELD));
+			List<Element> fieldElements = enclosedElements.getOrDefault(ElementKind.FIELD, Collections.emptyList());
+			Element idElement = lookupId(fieldElements);
 
 			int index = 1;
-			for (Element el : enclosedElements.get(ElementKind.FIELD)) {
+			for (Element el : fieldElements) {
 				VariableElement varEl = (VariableElement) el;
 				String varName = varEl.getSimpleName().toString();
 				if (!alreadyConsumed.contains(varName)) {

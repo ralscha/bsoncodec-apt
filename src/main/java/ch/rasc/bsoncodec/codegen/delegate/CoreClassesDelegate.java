@@ -15,6 +15,8 @@
  */
 package ch.rasc.bsoncodec.codegen.delegate;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,6 +50,12 @@ public class CoreClassesDelegate implements CodeGeneratorDelegate {
 		else if (Util.isSameType(type, AtomicLong.class)) {
 			builder.addStatement("writer.writeInt64($L.longValue())", ctx.getter());
 		}
+		else if (Util.isSameType(type, BigDecimal.class)) {
+			builder.addStatement("writer.writeString($L.toString())", ctx.getter());
+		}
+		else if (Util.isSameType(type, BigInteger.class)) {
+			builder.addStatement("writer.writeString($L.toString())", ctx.getter());
+		}
 
 	}
 
@@ -73,12 +81,20 @@ public class CoreClassesDelegate implements CodeGeneratorDelegate {
 			builder.addStatement(ctx.setter("new $T(reader.readInt64())"),
 					AtomicLong.class);
 		}
+		else if (Util.isSameType(type, BigDecimal.class)) {
+			builder.addStatement(ctx.setter("new $T(reader.readString())"), BigDecimal.class);
+		}
+		else if (Util.isSameType(type, BigInteger.class)) {
+			builder.addStatement(ctx.setter("new $T(reader.readString())"),
+					BigInteger.class);
+		}
 	}
 
 	@Override
 	public boolean accepts(TypeMirror type) {
 		return Util.isAnyType(type, String.class, Date.class, AtomicBoolean.class,
-				AtomicInteger.class, AtomicLong.class);
+				AtomicInteger.class, AtomicLong.class, BigDecimal.class,
+				BigInteger.class);
 	}
 
 }

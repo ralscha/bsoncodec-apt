@@ -21,7 +21,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.lang.model.element.ElementKind;
@@ -57,6 +60,11 @@ public class MapCodeGen extends CompoundCodeGen {
 		if (this.implementationType == null) {
 			if (((DeclaredType) getType()).asElement()
 					.getKind() == ElementKind.INTERFACE) {
+				Class<?> defaultImpl = defaultMapImpl.get(
+						Util.erasure(this.getType()).toString());
+				if (defaultImpl != null) {
+					return ClassName.get(defaultImpl);
+				}
 				return ClassName.get(LinkedHashMap.class);
 			}
 			return ClassName.get((TypeElement) Util.typeUtils.asElement(this.getType()));
@@ -197,6 +205,21 @@ public class MapCodeGen extends CompoundCodeGen {
 			builder.endControlFlow();
 		}
 
+	}
+
+	private static Map<String, Class<?>> defaultMapImpl = new HashMap<>();
+
+	static {
+		addToDefaultMapImpl(Map.class, LinkedHashMap.class);
+		addToDefaultMapImpl(SortedMap.class, TreeMap.class);
+		addToDefaultMapImpl(NavigableMap.class, TreeMap.class);
+	}
+
+	private static void addToDefaultMapImpl(Class<?> interfaceClass, Class<?> implClass) {
+		defaultMapImpl.put(Util
+				.erasure(Util.elementUtils
+						.getTypeElement(interfaceClass.getCanonicalName()).asType())
+				.toString(), implClass);
 	}
 
 	private static Set<String> permitNullCollections = new HashSet<>();
