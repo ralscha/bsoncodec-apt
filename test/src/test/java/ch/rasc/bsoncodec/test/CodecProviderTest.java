@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.rasc.bsoncodec.test.pojo.AtomicBooleanPojo;
 import ch.rasc.bsoncodec.test.pojo.AtomicBooleanPojoCodec;

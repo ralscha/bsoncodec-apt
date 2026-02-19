@@ -16,11 +16,12 @@
 package ch.rasc.bsoncodec.test.provider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.bson.codecs.configuration.CodecConfigurationException;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CodecProviderTest {
 
@@ -32,11 +33,11 @@ public class CodecProviderTest {
 		assertThat(codecRegistry.get(ThreePojo.class)).isInstanceOf(ThreePojoCodec.class);
 	}
 
-	@Test(expected = CodecConfigurationException.class)
+	@Test
 	public void testOneProviderWithNotExistingCodec() {
 		OneProvider provider = new OneProvider();
 		CodecRegistry codecRegistry = CodecRegistries.fromProviders(provider);
-		assertThat(codecRegistry.get(TwoPojo.class)).isNull();
+		assertThrows(CodecConfigurationException.class, () -> codecRegistry.get(TwoPojo.class));
 	}
 
 	@Test

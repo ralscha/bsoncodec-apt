@@ -16,6 +16,7 @@
 package ch.rasc.bsoncodec.test.id;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
@@ -28,7 +29,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
@@ -487,7 +488,7 @@ public class IdTest extends AbstractMongoDBTest {
 		assertThat(doc.get("data")).isEqualTo(9);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void testHexStringIdToUUIDWoGeneratorIdNotSet() {
 		MongoDatabase db = connect();
 
@@ -497,7 +498,7 @@ public class IdTest extends AbstractMongoDBTest {
 
 		MongoCollection<StringHexToUuidWoGeneratorPojo> coll = db.getCollection(
 				"StringHexToUuidWoGeneratorPojo", StringHexToUuidWoGeneratorPojo.class);
-		coll.insertOne(pojo);
+		assertThrows(NullPointerException.class, () -> coll.insertOne(pojo));
 	}
 
 	@Test

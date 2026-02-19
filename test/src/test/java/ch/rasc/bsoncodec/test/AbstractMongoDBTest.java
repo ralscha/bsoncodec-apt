@@ -15,44 +15,41 @@
  */
 package ch.rasc.bsoncodec.test;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodProcess;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
-import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.embed.process.io.ProcessOutput;
+import de.flapdoodle.reverse.TransitionWalker;
+import de.flapdoodle.reverse.transitions.Start;
 
 public abstract class AbstractMongoDBTest {
 
-	/**
-	 * please store Starter or RuntimeConfig in a static final field if you want to use
-	 * artifact store caching (or else disable caching)
-	 */
-	private static final MongodStarter starter = MongodStarter.getDefaultInstance();
-
-	private MongodExecutable _mongodExe;
-	private MongodProcess _mongod;
+	private TransitionWalker.ReachedState<RunningMongodProcess> running;
 
 	private MongoClient _mongo;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
-		this._mongodExe = starter.prepare(MongodConfig.builder()
-				.version(Version.Main.PRODUCTION)
-				.net(new Net("127.0.0.1", 12345, Network.localhostIsIPv6())).build());
-		this._mongod = this._mongodExe.start();
+		Mongod mongod = Mongod.builder()
+				.processOutput(Start.to(ProcessOutput.class)
+						.initializedWith(ProcessOutput.silent())
+						.withTransitionLabel("no output"))
+				.build();
 
-		this._mongo = MongoClients.create("mongodb://localhost:12345");
+		this.running = mongod.start(Version.Main.V8_0);
 
-		// this._mongo = new MongoClient("localhost", 27017);
+		com.mongodb.ServerAddress serverAddress = new com.mongodb.ServerAddress(
+				this.running.current().getServerAddress().getHost(),
+				this.running.current().getServerAddress().getPort());
+		this._mongo = MongoClients.create("mongodb://" + serverAddress);
+
 		for (String dbName : this._mongo.listDatabaseNames()) {
 			if (!dbName.equals("admin") && !dbName.equals("local")) {
 				MongoDatabase database = this._mongo.getDatabase(dbName);
@@ -61,10 +58,14 @@ public abstract class AbstractMongoDBTest {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
-		this._mongod.stop();
-		this._mongodExe.stop();
+		if (this._mongo != null) {
+			this._mongo.close();
+		}
+		if (this.running != null) {
+			this.running.close();
+		}
 	}
 
 	public MongoClient getMongoClient() {

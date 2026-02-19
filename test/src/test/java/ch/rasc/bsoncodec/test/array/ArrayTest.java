@@ -23,7 +23,7 @@ import org.bson.Document;
 import org.bson.codecs.ObjectIdGenerator;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
