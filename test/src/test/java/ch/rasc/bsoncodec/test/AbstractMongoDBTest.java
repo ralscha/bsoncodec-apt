@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,12 +22,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
+import de.flapdoodle.commons.reverse.TransitionWalker;
+import de.flapdoodle.commons.reverse.transitions.Start;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.transitions.Mongod;
 import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
 import de.flapdoodle.embed.process.io.ProcessOutput;
-import de.flapdoodle.reverse.TransitionWalker;
-import de.flapdoodle.reverse.transitions.Start;
 
 public abstract class AbstractMongoDBTest {
 
