@@ -6,7 +6,7 @@ This project implements a Java 8 Annotation Processor (APT) that
 creates [org.bson.codecs.Codec](http://mongodb.github.io/mongo-java-driver/3.8/javadoc/org/bson/codecs/Codec.html) 
 implementations for simple Java objects. 
 
-The annotation processor takes classes like this (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/Simple.java))
+The annotation processor takes classes like this (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/main/src/test/resources/Simple.java))
 ```
 @BsonDocument
 public class Simple {
@@ -16,7 +16,7 @@ public class Simple {
 }
 ```
 
-and generates a corresponding ```Codec<Simple>``` implementation (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/SimpleCodec.java))
+and generates a corresponding ```Codec<Simple>``` implementation (see the full code [here](https://github.com/ralscha/bsoncodec-apt/blob/main/src/test/resources/SimpleCodec.java))
 
 ```
 public final class SimpleCodec implements Codec<Simple> {
@@ -42,7 +42,7 @@ public final class SimpleCodec implements Codec<Simple> {
   }
 }
 ```
-and it creates an additional implementation of the [org.bson.codecs.configuration.CodecProvier](http://api.mongodb.org/java/3.2/org/bson/codecs/configuration/CodecProvider.html) interface (see code [here](https://github.com/ralscha/bsoncodec-apt/blob/master/src/test/resources/PojoCodecProvider.java)).
+and it creates an additional implementation of the [org.bson.codecs.configuration.CodecProvier](http://api.mongodb.org/java/3.2/org/bson/codecs/configuration/CodecProvider.html) interface (see code [here](https://github.com/ralscha/bsoncodec-apt/blob/main/src/test/resources/PojoCodecProvider.java)).
 
 
 ## Maven
